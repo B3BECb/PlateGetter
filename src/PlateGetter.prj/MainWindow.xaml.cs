@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlateGetter.Settings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,26 @@ namespace PlateGetter
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
 		{
 			_viewModel.Settings();
+		}
+
+		private void button_Click(object sender, RoutedEventArgs e)
+		{
+			_viewModel.Save();
+		}
+
+		private void button1_Click(object sender, RoutedEventArgs e)
+		{
+			_viewModel.NextPage();
+		}
+
+		private void button3_Click(object sender, RoutedEventArgs e)
+		{
+			_viewModel.DownloadAll();
+		}
+
+		private void button4_Click(object sender, RoutedEventArgs e)
+		{
+			_viewModel.Stop();
 		}
 	}
 }

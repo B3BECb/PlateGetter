@@ -1,10 +1,11 @@
-﻿using System;
+﻿using PlateGetter.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlateGetter
+namespace PlateGetter.Settings
 {
 	public sealed class ProgrammSettings
 	{

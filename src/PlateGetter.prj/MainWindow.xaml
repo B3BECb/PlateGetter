@@ -12,23 +12,49 @@
             <ColumnDefinition Width="138"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="1" Margin="0,18,0,0">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <LinearGradientBrush.RelativeTransform>
+                        <TransformGroup>
+                            <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                            <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                            <RotateTransform Angle="90" CenterY="0.5" CenterX="0.5"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </LinearGradientBrush.RelativeTransform>
+                    <GradientStop Color="#FF919191" Offset="1"/>
+                    <GradientStop Color="White" Offset="0.988"/>
+                </LinearGradientBrush>
+            </Grid.Background>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
-                <RowDefinition Height="78*"/>
                 <RowDefinition Height="40"/>
+                <RowDefinition Height="20*"/>
                 <RowDefinition Height="40"/>
-                <RowDefinition Height="78*"/>
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
-            <Button x:Name="button" Content="СОХРАНИТЬ" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="2" VerticalAlignment="Top" Width="118" Height="20" Background="#FFF9F9F9" BorderBrush="#FF9B9B9B"/>
-            <Button x:Name="button1" Content="ПРОПУСТИТЬ" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="3" VerticalAlignment="Top" Width="118" Height="20" Background="#FFF9F9F9" BorderBrush="#FF9B9B9B"/>
-            <Button x:Name="button2" Content="Начать" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="118" Height="20"/>
-            <Button x:Name="button3" Content="Загрузить всё" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="5" VerticalAlignment="Top" Width="118" Height="20"/>
+            <Button x:Name="button" Content="СОХРАНИТЬ" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="118" Height="20" Background="#FFF9F9F9" BorderBrush="#FF9B9B9B" Click="button_Click"/>
+            <Button x:Name="button1" Content="ПРОПУСТИТЬ" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="118" Height="20" Background="#FFF9F9F9" BorderBrush="#FF9B9B9B" Click="button1_Click"/>
+            <Button x:Name="button3" Content="Загрузить всё" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="3" VerticalAlignment="Top" Width="118" Height="20" Click="button3_Click"/>
+            <Button x:Name="button4" Content="Остановить загрузку" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="6" VerticalAlignment="Top" Width="118" Click="button4_Click"/>
+            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Width="118" TextAlignment="Center">
+            <Run>Фотография </Run><LineBreak/>
+            <Run Text="{Binding CurrentPage, Mode=OneWay}"/><LineBreak/>
+            <Run> из</Run><LineBreak/>
+            <Run Text="{Binding TotalPages, Mode=OneWay}"/>
+            </TextBlock>
         </Grid>
-        <Image x:Name="image" Source="{Binding Image}" Margin="0,18,0,0"/>
+        <Image x:Name="image" Source="{Binding Image, Mode=OneWay}" Margin="0,18,0,10"/>
         <Menu x:Name="menu" Height="18" VerticalAlignment="Top" Grid.ColumnSpan="2">
+            <Menu.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF919191" Offset="1"/>
+                    <GradientStop Color="White" Offset="0.932"/>
+                </LinearGradientBrush>
+            </Menu.Background>
             <MenuItem Header="Настройки" Click="OnSettingsClick"/>
         </Menu>
+        <ProgressBar Value="{Binding DownloadProgress, Mode=OneWay}" Height="10" VerticalAlignment="Bottom" Background="#FFD3D1D1" BorderBrush="#FF919191"/>
 
     </Grid>
 </Window>

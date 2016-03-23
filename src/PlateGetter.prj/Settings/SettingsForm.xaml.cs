@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlateGetter.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,6 +44,7 @@ namespace PlateGetter.Settings
 		private void button_Click(object sender, RoutedEventArgs e)
 		{
 			_viewModel.Apply();
+			DialogResult = true;
 			Close();
 		}
 

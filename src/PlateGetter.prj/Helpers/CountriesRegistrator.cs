@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlateGetter
+namespace PlateGetter.Helpers
 {
 	/// <summary>Регистратор стран.</summary>
 	public static class CountriesRegistrator
