@@ -13,5 +13,16 @@ namespace PlateGetter
 	/// </summary>
 	public partial class App : Application
 	{
+		ProgrammSettings _settings;
+
+		App()
+		{
+			_settings = new ProgrammSettings();
+			
+			using(var mainForm = new MainWindow(_settings))
+			{
+				mainForm.ShowDialog();
+			}
+		}
 	}
 }

@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace PlateGetter
 {
-	class MainWindowViewModel : INotifyPropertyChanged
+	internal sealed class MainWindowViewModel : INotifyPropertyChanged
 	{
 		#region Properties
 
@@ -27,14 +27,16 @@ namespace PlateGetter
 
 		private ImageSource _image;
 
+		private ProgrammSettings _settings;
+
 		#endregion
 
 
 		#region .ctor
-
-		public MainWindowViewModel()
+		
+		public MainWindowViewModel(ProgrammSettings settings)
 		{
-
+			_settings = settings;
 		}
 
 		#endregion
@@ -50,6 +52,14 @@ namespace PlateGetter
 		public void Start()
 		{
 
+		}
+
+		internal void Settings()
+		{
+			using(var settingsForm = new Settings.SettingsForm(_settings))
+			{
+				settingsForm.ShowDialog();
+			}
 		}
 
 		public void Stop()

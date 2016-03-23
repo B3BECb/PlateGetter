@@ -18,16 +18,26 @@ namespace PlateGetter
 	/// <summary>
 	/// Логика взаимодействия для MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow : Window, IDisposable
 	{
 		private MainWindowViewModel _viewModel;
 
-		public MainWindow()
-		{
-			_viewModel = new MainWindowViewModel();
+		public MainWindow(ProgrammSettings settings)
+		{			
+			_viewModel = new MainWindowViewModel(settings);
 			DataContext = _viewModel;
 
 			InitializeComponent();
+		}
+
+		public void Dispose()
+		{
+			
+		}
+
+		private void OnSettingsClick(object sender, RoutedEventArgs e)
+		{
+			_viewModel.Settings();
 		}
 	}
 }
