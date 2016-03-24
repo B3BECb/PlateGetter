@@ -105,6 +105,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core.prj\Core.csproj">
+      <Project>{3dde8194-7b2c-4352-b800-df18d71fe8dc}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ImagesLoader.prj\ImagesLoader.csproj">
       <Project>{684754a9-b06d-4154-ae63-77ae1291e8d8}</Project>
       <Name>ImagesLoader</Name>

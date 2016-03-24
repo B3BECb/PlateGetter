@@ -41,8 +41,6 @@ namespace PlateGetter
 
 		private ProgrammSettings _settings;
 
-		private CancellationTokenSource _cancelationTokenSource;
-
 		private ImageDownloader _imageLoader;
 
 		private int _currentPage;
@@ -57,9 +55,17 @@ namespace PlateGetter
 		public MainWindowViewModel(ProgrammSettings settings)
 		{
 			_settings = settings;
-			_currentPage = _settings.StartPageNumber - 1;
+			_currentPage = _settings.StartPageNumber;
 
 			_imageLoader = new ImageDownloader(_settings.SelectedCountry);
+			_imageLoader.OnImageLoaded += OnImageLoaded;
+		}
+
+		private void OnImageLoaded(object sender, EventArgs e)
+		{
+			_image = sender as BitmapImage;
+			OnPropertyChanged("Image");
+			OnPropertyChanged("CurrentPage");
 		}
 
 		#endregion
@@ -76,7 +82,8 @@ namespace PlateGetter
 		/// <summary>Переходит к следующему изображению.</summary>
 		public void NextPage()
 		{
-			
+			_imageLoader.LoadOneAsync(_currentPage++);
+			OnPropertyChanged("CurrentPage");
 		}
 
 		/// <summary>Загружает все изображения.</summary>
@@ -88,8 +95,9 @@ namespace PlateGetter
 		/// <summary>Останавливает загрузку изображения.</summary>
 		public void Stop()
 		{
-			_cancelationTokenSource?.Cancel();
+			_imageLoader.CancelDownload();
 			_progress = 0;
+			OnPropertyChanged("CurrentPage");
 		}
 
 		internal void Settings()
@@ -102,7 +110,7 @@ namespace PlateGetter
 				{
 					OnPropertyChanged("TotalPages");
 
-					_currentPage = _settings.StartPageNumber - 1;
+					_currentPage = _settings.StartPageNumber;
 					OnPropertyChanged("CurrentPage");
 				}
 			}
