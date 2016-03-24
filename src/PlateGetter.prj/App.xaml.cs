@@ -1,4 +1,4 @@
-﻿using PlateGetter.Settings;
+﻿using PlateGetter.Core;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

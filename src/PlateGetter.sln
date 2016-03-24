@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlateGetter", "PlateGetter.prj\PlateGetter.csproj", "{11D8F58A-4451-43FE-84AD-ABFA7DBEE4FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImagesLoader", "ImagesLoader.prj\ImagesLoader.csproj", "{684754A9-B06D-4154-AE63-77AE1291E8D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{3DDE8194-7B2C-4352-B800-DF18D71FE8DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core.prj\Core.csproj", "{3DDE8194-7B2C-4352-B800-DF18D71FE8DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

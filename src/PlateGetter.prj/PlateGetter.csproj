@@ -55,9 +55,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Helpers\CountriesRegistrator.cs" />
-    <Compile Include="Settings\ProgrammSettings.cs" />
-    <Compile Include="Helpers\Country.cs" />
     <Compile Include="Settings\SettingsForm.xaml.cs">
       <DependentUpon>SettingsForm.xaml</DependentUpon>
     </Compile>

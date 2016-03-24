@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlateGetter.Helpers
+namespace PlateGetter.Core.Helpers
 {
 	public sealed class Country
 	{

@@ -1,5 +1,5 @@
 ﻿using PlateGetter.ImagesLoader;
-using PlateGetter.Settings;
+using PlateGetter.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,7 +43,7 @@ namespace PlateGetter
 
 		private CancellationTokenSource _cancelationTokenSource;
 
-		private ImageLoader _imageLoader;
+		private ImageDownloader _imageLoader;
 
 		private int _currentPage;
 
@@ -59,7 +59,7 @@ namespace PlateGetter
 			_settings = settings;
 			_currentPage = _settings.StartPageNumber - 1;
 
-			_imageLoader = new ImageLoader(_settings.SelectedCountry);
+			_imageLoader = new ImageDownloader(_settings.SelectedCountry);
 		}
 
 		#endregion

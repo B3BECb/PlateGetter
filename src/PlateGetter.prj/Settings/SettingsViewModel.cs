@@ -1,4 +1,5 @@
-﻿using PlateGetter.Helpers;
+﻿using PlateGetter.Core;
+using PlateGetter.Core.Helpers;
 using System;
 using System.ComponentModel;
 

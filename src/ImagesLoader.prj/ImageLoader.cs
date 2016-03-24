@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlateGetter.Core.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Windows.Media.Imaging;
 
 namespace PlateGetter.ImagesLoader
 {
-	public class ImageLoader
+	public class ImageDownloader
 	{
 		#region Properties
 
@@ -28,7 +29,7 @@ namespace PlateGetter.ImagesLoader
 		#region .ctor
 		/// <summary>Создаёт класс загрузчика изображений.</summary>
 		/// <param name="coutryPlateName">Инициалы страны на номерном знаке.</param>
-		public ImageLoader(Country coutryPlateName)
+		public ImageDownloader(Country coutryPlateName)
 		{
 			_currentCountry = coutryPlateName;
 		}
