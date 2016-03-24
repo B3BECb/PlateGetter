@@ -82,7 +82,12 @@ namespace PlateGetter.ImagesLoader
 				}
 				
 				// Проверка на получение неправильной строки. Пример: \"
-				if(regexImage.Length < 3) return;
+				if(regexImage.Length < 3)
+				{
+					currentPage = FindNext(currentPage);
+					currentPage--;
+					return;
+				}
 
 				// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
 				regexImage = new Regex("/./").Replace(regexImage, "/o/");
@@ -107,6 +112,26 @@ namespace PlateGetter.ImagesLoader
 		{
 			(sender as BitmapImage)?.Freeze();
 			OnImageLoaded.BeginInvoke(sender, e, null, null);
+		}
+
+		private int FindNext(int currentPage)
+		{
+			int foundedPage = currentPage;
+			using(var webClient = new WebClient())
+			{
+				while(true)
+				{
+					var page = webClient.DownloadString(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + foundedPage));
+
+					var regexImage = new Regex("<img src=\"?(.*jpg)\"? class=\"img-responsive center-block.*>").Matches(page)[0].Groups[1].Value;
+
+					if(regexImage.Length > 3) break;
+
+					foundedPage++;
+				}
+			}
+			
+			return foundedPage;
 		}
 
 		#endregion
