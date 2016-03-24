@@ -1,4 +1,5 @@
-﻿using PlateGetter.Settings;
+﻿using PlateGetter.ImagesLoader;
+using PlateGetter.Settings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace PlateGetter
 {
@@ -41,6 +43,8 @@ namespace PlateGetter
 
 		private CancellationTokenSource _cancelationTokenSource;
 
+		private ImageLoader _imageLoader;
+
 		private int _currentPage;
 
 		private int _progress;
@@ -54,6 +58,8 @@ namespace PlateGetter
 		{
 			_settings = settings;
 			_currentPage = _settings.StartPageNumber - 1;
+
+			_imageLoader = new ImageLoader(_settings.SelectedCountry);
 		}
 
 		#endregion
@@ -70,7 +76,7 @@ namespace PlateGetter
 		/// <summary>Переходит к следующему изображению.</summary>
 		public void NextPage()
 		{
-
+			
 		}
 
 		/// <summary>Загружает все изображения.</summary>

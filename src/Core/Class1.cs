@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlateGetter.ImagesLoader
+namespace Core
 {
     public class Class1
     {
