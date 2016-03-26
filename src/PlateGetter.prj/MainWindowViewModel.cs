@@ -59,6 +59,13 @@ namespace PlateGetter
 
 			_imageLoader = new ImageDownloader(_settings.SelectedCountry);
 			_imageLoader.OnImageLoaded += OnImageLoaded;
+			_imageLoader.OnPageSkiped += OnPageSkiped;
+		}
+
+		private void OnPageSkiped(object sender, int e)
+		{
+			_currentPage = e;
+			OnPropertyChanged("CurrentPage");
 		}
 
 		private void OnImageLoaded(object sender, EventArgs e)
@@ -82,7 +89,7 @@ namespace PlateGetter
 		/// <summary>Переходит к следующему изображению.</summary>
 		public void NextPage()
 		{
-			_imageLoader.LoadOneAsync(_currentPage++);
+			_imageLoader.LoadOneAsync(_currentPage, _settings.EndPageNumber);
 			OnPropertyChanged("CurrentPage");
 		}
 

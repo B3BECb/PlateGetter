@@ -26,12 +26,16 @@ namespace PlateGetter.ImagesLoader
 
 		private CancellationTokenSource _cancelationTokenSource = new CancellationTokenSource();
 
+		private int _totalPlates;
+
 		#endregion
 
 
 		#region Events
 
 		public event EventHandler<EventArgs> OnImageLoaded;
+
+		public event EventHandler<int> OnPageSkiped;
 
 		#endregion
 
@@ -44,11 +48,7 @@ namespace PlateGetter.ImagesLoader
 		}
 
 		#endregion
-			
-		
-		/*rex1 = re.compile(r'http://img[0-9][1-9].avto-nomer.ru/.{1,30}jpg')
-		rex2 = re.compile(r'http://img[0-9][1-9].platesmania.com/.{1,30}/o/.{1,30}jpg')*/
-			
+						
 
 		#region Public methods
 
@@ -57,8 +57,9 @@ namespace PlateGetter.ImagesLoader
 			_cancelationTokenSource?.Cancel();
 		}
 
-		public async void LoadOneAsync(int currentPage)
+		public async void LoadOneAsync(int currentPage, int totalPlates)
 		{
+			_totalPlates = totalPlates;
 			try
 			{
 				await LoadOne(currentPage).ConfigureAwait(false);
@@ -71,25 +72,23 @@ namespace PlateGetter.ImagesLoader
 
 		public async Task LoadOne(int currentPage)
 		{
-			lock(_syncRoot)
+			string regexImage = "";
+
+			while(regexImage == "" && currentPage > _totalPlates)
 			{
-				string regexImage = "";
-
-				while(regexImage == "")
-				{
-					regexImage = GetImageLink(currentPage++);
-				}
-
-				// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
-				regexImage = new Regex("/./").Replace(regexImage, "/o/");
-								
-				BitmapImage bitmapImage = new BitmapImage();
-				bitmapImage.DownloadCompleted += ImageDownloadCompleted;
-				bitmapImage.BeginInit();
-				bitmapImage.CacheOption = BitmapCacheOption.None;
-				bitmapImage.UriSource = new Uri(regexImage, UriKind.Absolute);
-				bitmapImage.EndInit();
+				regexImage = await GetImageLink(currentPage--);
+				OnPageSkiped.BeginInvoke(this, currentPage, null, null);
 			}
+
+			// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
+			regexImage = new Regex("/./").Replace(regexImage, "/o/");
+								
+			BitmapImage bitmapImage = new BitmapImage();
+			bitmapImage.DownloadCompleted += ImageDownloadCompleted;
+			bitmapImage.BeginInit();
+			bitmapImage.CacheOption = BitmapCacheOption.None;
+			bitmapImage.UriSource = new Uri(regexImage, UriKind.Absolute);
+			bitmapImage.EndInit();			
 		}
 
 		#endregion
@@ -103,7 +102,7 @@ namespace PlateGetter.ImagesLoader
 			OnImageLoaded.BeginInvoke(sender, e, null, null);
 		}
 
-		private string GetImageLink(int currentPage)
+		private async Task<string> GetImageLink(int currentPage)
 		{
 			string pageTitle = _currentCountry.FullName;
 			string regexImage = "";
@@ -113,7 +112,7 @@ namespace PlateGetter.ImagesLoader
 			{
 				using(var webClient = new WebClient())
 				{
-					page = webClient.DownloadString(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + currentPage));
+					page = await webClient.DownloadStringTaskAsync(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + currentPage)).ConfigureAwait(false);
 				}
 
 				pageTitle = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;

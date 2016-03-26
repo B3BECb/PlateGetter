@@ -35,7 +35,7 @@ namespace PlateGetter.Settings
 
 			StartPageNumber = _settings.StartPageNumber;
 
-			EndPageNumber = _settings.EndPageNumber;
+			EndPageNumber = _settings.StartPageNumber - _settings.EndPageNumber;
 
 			Countries = new BindingList<Country>(_settings.CountriesList);
 		}

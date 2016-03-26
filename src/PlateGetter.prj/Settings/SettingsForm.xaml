@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlateGetter.Settings"
         mc:Ignorable="d"
-        Title="Настройки" Height="246.185" Width="272.629" WindowStyle="ToolWindow" ResizeMode="NoResize" BorderBrush="Black">
+        Title="Настройки" Height="246.185" Width="311.629" WindowStyle="ToolWindow" ResizeMode="NoResize" BorderBrush="Black">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="89*"/>
             <RowDefinition Height="20*"/>
         </Grid.RowDefinitions>
-        <Label x:Name="label1" Content="С страницы:" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Height="15" Width="118" Padding="5,0,0,0"/>
-        <Label x:Name="label2" Content="По страницу:" HorizontalAlignment="Left" Margin="10,140,0,0" VerticalAlignment="Top" Height="15" Width="118" Padding="5,0,0,0"/>
+        <Label x:Name="label1" Content="Номер последей страницы:" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Height="15" Width="162" Padding="5,0,0,0"/>
+        <Label x:Name="label2" Content="Всего номеров:" HorizontalAlignment="Left" Margin="10,140,0,0" VerticalAlignment="Top" Height="15" Width="118" Padding="5,0,0,0"/>
         <TextBox x:Name="textBox" 
                  HorizontalAlignment="Right" 
                  Height="21" Margin="0,86,11,0" 
