@@ -73,36 +73,16 @@ namespace PlateGetter.ImagesLoader
 		{
 			lock(_syncRoot)
 			{
-				string regexImage;
-				using(var webClient = new WebClient())
+				string regexImage = "";
+
+				while(regexImage == "")
 				{
-					var page = webClient.DownloadString(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + currentPage));
-
-					var title = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;
-
-					if(string.Compare(title, _currentCountry.FullName, false) != 0)
-					{
-						currentPage = FindNext(currentPage);
-						currentPage--;
-						return;
-					}
-
-					regexImage = new Regex("<img src=\"?(.*jpg)\"? class=\"img-responsive center-block.*>").Matches(page)[0].Groups[1].Value;					
+					regexImage = GetImageLink(currentPage++);
 				}
-				
-				// Проверка на получение неправильной строки. Пример: \"
-				//if(regexImage.Length < 3)
-				//{
-					currentPage = FindNext(currentPage);
-					currentPage--;
-					return;
-				//}
 
 				// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
 				regexImage = new Regex("/./").Replace(regexImage, "/o/");
-
-				//var regexDiscription = new Regex("<img .*alt=\"(.*)\" .*>").Matches(regexImageContainer)[0].Groups[1].Value;
-				
+								
 				BitmapImage bitmapImage = new BitmapImage();
 				bitmapImage.DownloadCompleted += ImageDownloadCompleted;
 				bitmapImage.BeginInit();
@@ -123,35 +103,33 @@ namespace PlateGetter.ImagesLoader
 			OnImageLoaded.BeginInvoke(sender, e, null, null);
 		}
 
-		private int FindNext(int currentPage)
+		private string GetImageLink(int currentPage)
 		{
-			int foundedPage = currentPage;
 			string pageTitle = _currentCountry.FullName;
 			string regexImage = "";
-			using(var webClient = new WebClient())
+			string page = "";
+
+			try
 			{
-				while(pageTitle.ToLower() == _currentCountry.FullName.ToLower() || regexImage.Length < 3) 
+				using(var webClient = new WebClient())
 				{
-					try
-					{
-						var page = webClient.DownloadString(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + foundedPage));
-
-						pageTitle = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;
-
-						regexImage = new Regex("<img src=\"?(.*jpg)\"? class=\"img-responsive center-block.*>").Matches(page)[0].Groups[1].Value;						
-					}
-					catch(Exception exc)
-					{
-						regexImage = "";
-					}
-					finally
-					{
-						foundedPage++;
-					}
+					page = webClient.DownloadString(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + currentPage));
 				}
+
+				pageTitle = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;
+
+				if(pageTitle.ToLower() == _currentCountry.FullName.ToLower()) return "";
+
+				regexImage = new Regex("<img src=\"?(.*jpg)\"? class=\"img-responsive center-block.*>").Matches(page)[0].Groups[1].Value;
+
+				if(regexImage.Length < 3) return "";
+
+				return regexImage;
 			}
-			
-			return foundedPage;
+			catch
+			{
+				return "";
+			}			
 		}
 
 		#endregion
