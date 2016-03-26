@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace PlateGetter
 {
@@ -83,7 +84,27 @@ namespace PlateGetter
 		/// <summary>Сохраняет текущее изображение.</summary>
 		public void Save()
 		{
+			if(_image == null) return;
 
+			var encoder = new JpegBitmapEncoder(); 
+			encoder.Frames.Add(BitmapFrame.Create(_image as BitmapImage));
+
+			ValidatePath("images");
+
+			try
+			{
+				using(var stream = new FileStream("images\\foto" + _currentPage + ".jpeg", FileMode.CreateNew))
+				{
+					encoder.Save(stream);
+				}
+			}
+			catch
+			{
+
+			}
+
+			_imageLoader.LoadOneAsync(_currentPage, _settings.EndPageNumber);
+			OnPropertyChanged("CurrentPage");
 		}
 
 		/// <summary>Переходит к следующему изображению.</summary>
@@ -131,6 +152,14 @@ namespace PlateGetter
 		private void OnPropertyChanged(string propertyName)
 		{
 			PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		private void ValidatePath(string path)
+		{
+			if(!Directory.Exists(path))
+			{
+				Directory.CreateDirectory(path);
+			}
 		}
 
 		#endregion

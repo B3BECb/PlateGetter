@@ -60,9 +60,12 @@ namespace PlateGetter.ImagesLoader
 		public async void LoadOneAsync(int currentPage, int totalPlates)
 		{
 			_totalPlates = totalPlates;
+
+			if(_cancelationTokenSource.IsCancellationRequested) _cancelationTokenSource = new CancellationTokenSource();
+
 			try
 			{
-				await LoadOne(currentPage).ConfigureAwait(false);
+				await LoadOne(currentPage, _cancelationTokenSource.Token).ConfigureAwait(false);
 			}
 			catch(Exception exc)
 			{
@@ -70,11 +73,11 @@ namespace PlateGetter.ImagesLoader
 			}
 		}
 
-		public async Task LoadOne(int currentPage)
+		public async Task LoadOne(int currentPage, CancellationToken token)
 		{
 			string regexImage = "";
 
-			while(regexImage == "" && currentPage > _totalPlates)
+			while(regexImage == "" && currentPage > _totalPlates && !token.IsCancellationRequested)
 			{
 				regexImage = await GetImageLink(currentPage--);
 				OnPageSkiped.BeginInvoke(this, currentPage, null, null);

@@ -38,9 +38,9 @@
             <Button x:Name="button3" Content="Загрузить всё" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="3" VerticalAlignment="Top" Width="118" Height="20" Click="button3_Click"/>
             <Button x:Name="button4" Content="Остановить загрузку" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="6" VerticalAlignment="Top" Width="118" Click="button4_Click"/>
             <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Width="118" TextAlignment="Center">
-            <Run>Фотография </Run><LineBreak/>
+            <Run>Страница </Run><LineBreak/>
             <Run Text="{Binding CurrentPage, Mode=OneWay}"/><LineBreak/>
-            <Run> из</Run><LineBreak/>
+            <Run> конечная страница</Run><LineBreak/>
             <Run Text="{Binding TotalPages, Mode=OneWay}"/>
             </TextBlock>
         </Grid>

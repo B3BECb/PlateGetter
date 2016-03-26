@@ -37,9 +37,9 @@ namespace PlateGetter.Core
 		{
 			SelectedCountry = CountriesList.FirstOrDefault();
 
-			StartPageNumber = 0;
+			StartPageNumber = 1000;
 
-			EndPageNumber = 1000;
+			EndPageNumber = 0;
 		}
 
 		#endregion
