@@ -63,7 +63,7 @@ namespace PlateGetter.ImagesLoader
 			{
 				await LoadOne(currentPage).ConfigureAwait(false);
 			}
-			catch
+			catch(Exception exc)
 			{
 
 			}
@@ -77,17 +77,26 @@ namespace PlateGetter.ImagesLoader
 				using(var webClient = new WebClient())
 				{
 					var page = webClient.DownloadString(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + currentPage));
-					
+
+					var title = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;
+
+					if(string.Compare(title, _currentCountry.FullName, false) != 0)
+					{
+						currentPage = FindNext(currentPage);
+						currentPage--;
+						return;
+					}
+
 					regexImage = new Regex("<img src=\"?(.*jpg)\"? class=\"img-responsive center-block.*>").Matches(page)[0].Groups[1].Value;					
 				}
 				
 				// Проверка на получение неправильной строки. Пример: \"
-				if(regexImage.Length < 3)
-				{
+				//if(regexImage.Length < 3)
+				//{
 					currentPage = FindNext(currentPage);
 					currentPage--;
 					return;
-				}
+				//}
 
 				// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
 				regexImage = new Regex("/./").Replace(regexImage, "/o/");
@@ -117,17 +126,28 @@ namespace PlateGetter.ImagesLoader
 		private int FindNext(int currentPage)
 		{
 			int foundedPage = currentPage;
+			string pageTitle = _currentCountry.FullName;
+			string regexImage = "";
 			using(var webClient = new WebClient())
 			{
-				while(true)
+				while(pageTitle.ToLower() == _currentCountry.FullName.ToLower() || regexImage.Length < 3) 
 				{
-					var page = webClient.DownloadString(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + foundedPage));
+					try
+					{
+						var page = webClient.DownloadString(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + foundedPage));
 
-					var regexImage = new Regex("<img src=\"?(.*jpg)\"? class=\"img-responsive center-block.*>").Matches(page)[0].Groups[1].Value;
+						pageTitle = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;
 
-					if(regexImage.Length > 3) break;
-
-					foundedPage++;
+						regexImage = new Regex("<img src=\"?(.*jpg)\"? class=\"img-responsive center-block.*>").Matches(page)[0].Groups[1].Value;						
+					}
+					catch(Exception exc)
+					{
+						regexImage = "";
+					}
+					finally
+					{
+						foundedPage++;
+					}
 				}
 			}
 			

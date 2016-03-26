@@ -16,7 +16,7 @@ namespace PlateGetter.Core.Helpers
 		{
 			RegistredCountries = new List<Country>();
 
-			RegistredCountries.Add(new Country("Казахстан", "kz"));
+			RegistredCountries.Add(new Country("kazakhstan", "kz"));
 		}
 	}
 }
