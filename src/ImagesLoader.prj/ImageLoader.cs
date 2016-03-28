@@ -48,7 +48,7 @@ namespace PlateGetter.ImagesLoader
 		}
 
 		#endregion
-						
+
 
 		#region Public methods
 
@@ -85,14 +85,14 @@ namespace PlateGetter.ImagesLoader
 
 			// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
 			regexImage = new Regex("/./").Replace(regexImage, "/o/");
-								
+
 			BitmapImage bitmapImage = new BitmapImage();
 			bitmapImage.DownloadCompleted += ImageDownloadCompleted;
 			bitmapImage.BeginInit();
 			bitmapImage.CacheOption = BitmapCacheOption.None;
 			bitmapImage.UriSource = new Uri(regexImage, UriKind.Absolute);
-			bitmapImage.EndInit();			
-		}
+			bitmapImage.EndInit();
+		}	
 
 		#endregion
 

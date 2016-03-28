@@ -28,7 +28,6 @@ namespace PlateGetter
 		#endregion
 
 
-
 		#region Events
 
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -43,6 +42,8 @@ namespace PlateGetter
 		private ProgrammSettings _settings;
 
 		private ImageDownloader _imageLoader;
+
+		private bool _isSaveAllMode = false;
 
 		private int _currentPage;
 
@@ -74,6 +75,8 @@ namespace PlateGetter
 			_image = sender as BitmapImage;
 			OnPropertyChanged("Image");
 			OnPropertyChanged("CurrentPage");
+
+			if(_isSaveAllMode) SaveImage();
 		}
 
 		#endregion
@@ -83,41 +86,30 @@ namespace PlateGetter
 
 		/// <summary>Сохраняет текущее изображение.</summary>
 		public void Save()
-		{
-			if(_image == null) return;
-
-			var encoder = new JpegBitmapEncoder(); 
-			encoder.Frames.Add(BitmapFrame.Create(_image as BitmapImage));
-
-			ValidatePath("images");
-
-			try
-			{
-				using(var stream = new FileStream("images\\foto" + _currentPage + ".jpeg", FileMode.CreateNew))
-				{
-					encoder.Save(stream);
-				}
-			}
-			catch
-			{
-
-			}
-
+		{			
 			_imageLoader.LoadOneAsync(_currentPage, _settings.EndPageNumber);
-			OnPropertyChanged("CurrentPage");
+
+			SaveImage();
 		}
 
 		/// <summary>Переходит к следующему изображению.</summary>
 		public void NextPage()
 		{
 			_imageLoader.LoadOneAsync(_currentPage, _settings.EndPageNumber);
-			OnPropertyChanged("CurrentPage");
 		}
 
 		/// <summary>Загружает все изображения.</summary>
-		public void DownloadAll()
+		public async void DownloadAll()
 		{
+			_isSaveAllMode = !_isSaveAllMode;
 
+			for(int i = _currentPage; i > _settings.EndPageNumber; i--)
+			{
+				//_imageLoader.LoadOneAsync(_currentPage, _settings.EndPageNumber);
+				await _imageLoader.LoadOne(i, CancellationToken.None).ConfigureAwait(false);
+			}
+
+			_isSaveAllMode = !_isSaveAllMode;
 		}
 
 		/// <summary>Останавливает загрузку изображения.</summary>
@@ -125,7 +117,7 @@ namespace PlateGetter
 		{
 			_imageLoader.CancelDownload();
 			_progress = 0;
-			OnPropertyChanged("CurrentPage");
+			_isSaveAllMode = false;
 		}
 
 		internal void Settings()
@@ -160,6 +152,30 @@ namespace PlateGetter
 			{
 				Directory.CreateDirectory(path);
 			}
+		}
+
+		private bool SaveImage()
+		{
+			if(_image == null) return false;
+
+			var encoder = new JpegBitmapEncoder();
+			encoder.Frames.Add(BitmapFrame.Create(_image as BitmapImage));
+
+			ValidatePath("images");
+
+			try
+			{
+				using(var stream = new FileStream("images\\foto" + _currentPage + ".jpeg", FileMode.CreateNew))
+				{
+					encoder.Save(stream);
+				}
+			}
+			catch
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		#endregion
