@@ -10,11 +10,14 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.IO;
+using System.Diagnostics;
 
 namespace PlateGetter
 {
 	internal sealed class MainWindowViewModel : INotifyPropertyChanged
 	{
+
+		
 		#region Properties
 		
 		public ImageSource Image => _image;
@@ -60,8 +63,15 @@ namespace PlateGetter
 			_currentPage = _settings.StartPageNumber;
 
 			_imageLoader = new ImageDownloader(_settings.SelectedCountry);
+			_imageLoader.OnDownloadProgressChanged += OnDownloadProgressChanged;
 			_imageLoader.OnImageLoaded += OnImageLoaded;
 			_imageLoader.OnPageSkiped += OnPageSkiped;
+		}
+
+		private void OnDownloadProgressChanged(object sender, int e)
+		{
+			_progress = e;
+			OnPropertyChanged("DownloadProgress");
 		}
 
 		private void OnPageSkiped(object sender, int e)
@@ -75,8 +85,6 @@ namespace PlateGetter
 			_image = sender as BitmapImage;
 			OnPropertyChanged("Image");
 			OnPropertyChanged("CurrentPage");
-
-			if(_isSaveAllMode) SaveImage();
 		}
 
 		#endregion
@@ -84,9 +92,19 @@ namespace PlateGetter
 
 		#region Public methods
 
+		public void OpenFolder()
+		{
+			ValidatePath("images");
+
+			Process.Start(new ProcessStartInfo("explorer.exe", "images"));
+		}
+
 		/// <summary>Сохраняет текущее изображение.</summary>
 		public void Save()
-		{			
+		{
+			_progress = 0;
+			OnPropertyChanged("DownloadProgress");
+
 			_imageLoader.LoadOneAsync(_currentPage, _settings.EndPageNumber);
 
 			SaveImage();
@@ -95,21 +113,22 @@ namespace PlateGetter
 		/// <summary>Переходит к следующему изображению.</summary>
 		public void NextPage()
 		{
+			_progress = 0;
+			OnPropertyChanged("DownloadProgress");
+
 			_imageLoader.LoadOneAsync(_currentPage, _settings.EndPageNumber);
 		}
 
 		/// <summary>Загружает все изображения.</summary>
 		public async void DownloadAll()
 		{
-			_isSaveAllMode = !_isSaveAllMode;
-
 			for(int i = _currentPage; i > _settings.EndPageNumber; i--)
 			{
-				//_imageLoader.LoadOneAsync(_currentPage, _settings.EndPageNumber);
-				await _imageLoader.LoadOne(i, CancellationToken.None).ConfigureAwait(false);
-			}
+				_progress = 0;
+				OnPropertyChanged("DownloadProgress");
 
-			_isSaveAllMode = !_isSaveAllMode;
+				await _imageLoader.LoadOne(i).ConfigureAwait(false);
+			}
 		}
 
 		/// <summary>Останавливает загрузку изображения.</summary>

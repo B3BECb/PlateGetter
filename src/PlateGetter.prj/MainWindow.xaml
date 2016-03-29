@@ -29,20 +29,22 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
-                <RowDefinition Height="20*"/>
+                <RowDefinition/>
+                <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
             <Button x:Name="button" Content="СОХРАНИТЬ" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="118" Height="20" Background="#FFF9F9F9" BorderBrush="#FF9B9B9B" Click="button_Click"/>
             <Button x:Name="button1" Content="ПРОПУСТИТЬ" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="118" Height="20" Background="#FFF9F9F9" BorderBrush="#FF9B9B9B" Click="button1_Click"/>
-            <Button x:Name="button3" Content="Загрузить всё" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="3" VerticalAlignment="Top" Width="118" Height="20" Click="button3_Click"/>
-            <Button x:Name="button4" Content="Остановить загрузку" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="6" VerticalAlignment="Top" Width="118" Click="button4_Click"/>
-            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Width="118" TextAlignment="Center">
+            <Button x:Name="button3" Content="Загрузить всё" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="118" Height="20" Click="button3_Click" Background="#FFF9F9F9"/>
+            <Button x:Name="button4" Content="Остановить загрузку" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="5" VerticalAlignment="Top" Width="118" Click="button4_Click" Height="20" Background="#FFF9F9F9"/>
+            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Width="118" TextAlignment="Center" Height="64">
             <Run>Страница </Run><LineBreak/>
             <Run Text="{Binding CurrentPage, Mode=OneWay}"/><LineBreak/>
             <Run> конечная страница</Run><LineBreak/>
             <Run Text="{Binding TotalPages, Mode=OneWay}"/>
             </TextBlock>
+            <Button x:Name="button2" Content="Открыть папку" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="3" VerticalAlignment="Top" Width="118" Click="button2_Click"/>
         </Grid>
         <Image x:Name="image" Source="{Binding Image, Mode=OneWay}" Margin="0,18,0,10"/>
         <Menu x:Name="menu" Height="18" VerticalAlignment="Top" Grid.ColumnSpan="2">

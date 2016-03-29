@@ -60,5 +60,10 @@ namespace PlateGetter
 		{
 			_viewModel.Stop();
 		}
+
+		private void button2_Click(object sender, RoutedEventArgs e)
+		{
+			_viewModel.OpenFolder();
+		}
 	}
 }

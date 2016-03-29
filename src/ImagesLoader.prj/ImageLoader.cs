@@ -37,6 +37,8 @@ namespace PlateGetter.ImagesLoader
 
 		public event EventHandler<int> OnPageSkiped;
 
+		public event EventHandler<int> OnDownloadProgressChanged;
+
 		#endregion
 
 		#region .ctor
@@ -88,16 +90,42 @@ namespace PlateGetter.ImagesLoader
 
 			BitmapImage bitmapImage = new BitmapImage();
 			bitmapImage.DownloadCompleted += ImageDownloadCompleted;
+			bitmapImage.DownloadProgress += DownloadProgress;
 			bitmapImage.BeginInit();
 			bitmapImage.CacheOption = BitmapCacheOption.None;
 			bitmapImage.UriSource = new Uri(regexImage, UriKind.Absolute);
 			bitmapImage.EndInit();
-		}	
+		}
+
+		public async Task LoadOne(int page)
+		{
+			string regexImage = await GetImageLink(page);
+
+			if(regexImage == "")
+			{
+				OnPageSkiped.BeginInvoke(this, page, null, null);
+				return;
+			}
+
+			// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
+			regexImage = new Regex("/./").Replace(regexImage, "/o/");
+
+			using(var client = new WebClient())
+			{
+				client.DownloadFileCompleted += ImageDownloadCompleted;
+				client.DownloadProgressChanged += LoadProgressChanged;
+				await client.DownloadFileTaskAsync(regexImage, "images\\foto" + page + ".jpeg");
+			}				
+		}
 
 		#endregion
 
 
 		#region Private methods
+
+		private void DownloadProgress(object sender, DownloadProgressEventArgs e) => OnDownloadProgressChanged.BeginInvoke(this, e.Progress, null, null);
+
+		private void LoadProgressChanged(object sender, DownloadProgressChangedEventArgs e) => OnDownloadProgressChanged.BeginInvoke(this, e.ProgressPercentage, null, null);
 
 		private void ImageDownloadCompleted(object sender, EventArgs e)
 		{
