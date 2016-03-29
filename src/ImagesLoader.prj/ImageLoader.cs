@@ -59,7 +59,7 @@ namespace PlateGetter.ImagesLoader
 			_cancelationTokenSource?.Cancel();
 		}
 
-		public async void LoadOneAsync(int currentPage, int totalPlates)
+		public async void LoadNextAsync(int currentPage, int totalPlates)
 		{
 			_totalPlates = totalPlates;
 
@@ -67,7 +67,7 @@ namespace PlateGetter.ImagesLoader
 
 			try
 			{
-				await LoadOne(currentPage, _cancelationTokenSource.Token).ConfigureAwait(false);
+				await LoadNext(currentPage, _cancelationTokenSource.Token).ConfigureAwait(false);
 			}
 			catch(Exception exc)
 			{
@@ -75,7 +75,21 @@ namespace PlateGetter.ImagesLoader
 			}
 		}
 
-		public async Task LoadOne(int currentPage, CancellationToken token)
+		public async void LoadOneAsync(int page)
+		{
+			if(_cancelationTokenSource.IsCancellationRequested) _cancelationTokenSource = new CancellationTokenSource();
+
+			try
+			{
+				await LoadOne(page, _cancelationTokenSource.Token).ConfigureAwait(false);
+			}
+			catch(Exception exc)
+			{
+
+			}
+		}
+
+		public async Task LoadNext(int currentPage, CancellationToken token)
 		{
 			string regexImage = "";
 
@@ -97,7 +111,7 @@ namespace PlateGetter.ImagesLoader
 			bitmapImage.EndInit();
 		}
 
-		public async Task LoadOne(int page)
+		public async Task LoadOne(int page, CancellationToken token)
 		{
 			string regexImage = await GetImageLink(page);
 

@@ -105,7 +105,7 @@ namespace PlateGetter
 			_progress = 0;
 			OnPropertyChanged("DownloadProgress");
 
-			_imageLoader.LoadOneAsync(_currentPage, _settings.EndPageNumber);
+			_imageLoader.LoadNextAsync(_currentPage, _settings.EndPageNumber);
 
 			SaveImage();
 		}
@@ -116,18 +116,18 @@ namespace PlateGetter
 			_progress = 0;
 			OnPropertyChanged("DownloadProgress");
 
-			_imageLoader.LoadOneAsync(_currentPage, _settings.EndPageNumber);
+			_imageLoader.LoadNextAsync(_currentPage, _settings.EndPageNumber);
 		}
 
 		/// <summary>Загружает все изображения.</summary>
-		public async void DownloadAll()
+		public void DownloadAll()
 		{
 			for(int i = _currentPage; i > _settings.EndPageNumber; i--)
 			{
 				_progress = 0;
 				OnPropertyChanged("DownloadProgress");
 
-				await _imageLoader.LoadOne(i).ConfigureAwait(false);
+				_imageLoader.LoadOneAsync(i);
 			}
 		}
 
