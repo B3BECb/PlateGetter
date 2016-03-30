@@ -12,7 +12,7 @@
             <RowDefinition Height="20*"/>
         </Grid.RowDefinitions>
         <Label x:Name="label1" Content="Номер последей страницы:" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Height="15" Width="162" Padding="5,0,0,0"/>
-        <Label x:Name="label2" Content="Всего номеров:" HorizontalAlignment="Left" Margin="10,140,0,0" VerticalAlignment="Top" Height="15" Width="118" Padding="5,0,0,0"/>
+        <Label x:Name="label2" Content="Скачать номеров:" HorizontalAlignment="Left" Margin="10,140,0,0" VerticalAlignment="Top" Height="15" Width="118" Padding="5,0,0,0"/>
         <TextBox x:Name="textBox" 
                  HorizontalAlignment="Right" 
                  Height="21" Margin="0,86,11,0" 
@@ -24,7 +24,7 @@
                  HorizontalAlignment="Right" 
                  Margin="0,139,11,0" 
                  TextWrapping="Wrap" 
-                 Text="{Binding EndPageNumber}" 
+                 Text="{Binding DownloadPages}" 
                  Width="118" 
                  Height="21" VerticalAlignment="Top"/>
         <ComboBox x:Name="comboBox" SelectedIndex="0" ItemsSource="{Binding Countries}" Margin="0,28,11,0" VerticalAlignment="Top" Height="22" SelectionChanged="comboBox_SelectionChanged" HorizontalAlignment="Right" Width="118"/>

@@ -13,7 +13,7 @@ namespace PlateGetter.Settings
 
 		public int StartPageNumber { get; set; }
 
-		public int EndPageNumber { get; set; }
+		public int DownloadPages { get; set; }
 
 		#endregion
 
@@ -35,7 +35,7 @@ namespace PlateGetter.Settings
 
 			StartPageNumber = _settings.StartPageNumber;
 
-			EndPageNumber = _settings.StartPageNumber - _settings.EndPageNumber;
+			DownloadPages = _settings.DownloadPages;
 
 			Countries = new BindingList<Country>(_settings.CountriesList);
 		}
@@ -54,7 +54,7 @@ namespace PlateGetter.Settings
 
 		internal void Apply()
 		{
-			_settings.EndPageNumber = EndPageNumber;
+			_settings.DownloadPages = DownloadPages;
 			_settings.StartPageNumber = StartPageNumber;
 			_settings.SelectedCountry = _selectedCountry;
 		}

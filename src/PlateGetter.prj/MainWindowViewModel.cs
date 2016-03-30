@@ -15,21 +15,18 @@ using System.Diagnostics;
 namespace PlateGetter
 {
 	internal sealed class MainWindowViewModel : INotifyPropertyChanged
-	{
-
-		
+	{				
 		#region Properties
 		
 		public ImageSource Image => _image;
 
-		public int CurrentPage => _currentPage;
+		public int DownlodedImages => _downlodedImages;
 
-		public int TotalPages => _settings.EndPageNumber;
+		public int TotalPages => _settings.DownloadPages;
 
 		public int DownloadProgress => _progress;
 
 		#endregion
-
 
 		#region Events
 
@@ -46,14 +43,13 @@ namespace PlateGetter
 
 		private ImageDownloader _imageLoader;
 
-		private bool _isSaveAllMode = false;
+		private int _downlodedImages;
 
 		private int _currentPage;
 
 		private int _progress;
 
 		#endregion
-
 
 		#region .ctor
 
@@ -83,12 +79,12 @@ namespace PlateGetter
 		private void OnImageLoaded(object sender, EventArgs e)
 		{
 			_image = sender as BitmapImage;
+			_downlodedImages++;
 			OnPropertyChanged("Image");
-			OnPropertyChanged("CurrentPage");
+			OnPropertyChanged("DownlodedImages");
 		}
 
 		#endregion
-
 
 		#region Public methods
 
@@ -105,7 +101,7 @@ namespace PlateGetter
 			_progress = 0;
 			OnPropertyChanged("DownloadProgress");
 
-			_imageLoader.LoadNextAsync(_currentPage, _settings.EndPageNumber);
+			_imageLoader.LoadNextAsync(_currentPage, _settings.StartPageNumber - _settings.DownloadPages);
 
 			SaveImage();
 		}
@@ -116,19 +112,13 @@ namespace PlateGetter
 			_progress = 0;
 			OnPropertyChanged("DownloadProgress");
 
-			_imageLoader.LoadNextAsync(_currentPage, _settings.EndPageNumber);
+			_imageLoader.LoadNextAsync(_currentPage, _settings.StartPageNumber - _settings.DownloadPages);
 		}
 
 		/// <summary>Загружает все изображения.</summary>
 		public void DownloadAll()
-		{			
-			Parallel.For(_settings.EndPageNumber, _currentPage, (page) => 
-			{
-				_progress = 0;
-				OnPropertyChanged("DownloadProgress");
-
-				_imageLoader.LoadOne(page);				
-			});
+		{
+			_imageLoader.DownloadAll(_currentPage, _settings.DownloadPages);
 		}
 
 		/// <summary>Останавливает загрузку изображения.</summary>
@@ -136,7 +126,6 @@ namespace PlateGetter
 		{
 			_imageLoader.CancelDownload();
 			_progress = 0;
-			_isSaveAllMode = false;
 		}
 
 		internal void Settings()
@@ -150,13 +139,13 @@ namespace PlateGetter
 					OnPropertyChanged("TotalPages");
 
 					_currentPage = _settings.StartPageNumber;
+					_imageLoader.CurrentCountry = _settings.SelectedCountry;
 					OnPropertyChanged("CurrentPage");
 				}
 			}
 		}
 
 		#endregion
-
 
 		#region Private methods
 		

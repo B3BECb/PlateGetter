@@ -18,28 +18,22 @@ namespace PlateGetter.Core
 		public int StartPageNumber { get; set; }
 
 		/// <summary>Возвращает и задаёт номер конечной страницы с фотографией.</summary>
-		public int EndPageNumber { get; set; }
+		public int DownloadPages { get; set; }
 
 		/// <summary>Возвращает и задаёт список доступных стран.</summary>
 		public List<Country> CountriesList => CountriesRegistrator.RegistredCountries;
 
 		#endregion
-
-
-		#region Data
-
-		#endregion
-
-
+		
 		#region .ctor
 		
 		public ProgrammSettings()
 		{
 			SelectedCountry = CountriesList.FirstOrDefault();
 
-			StartPageNumber = 1000;
+			StartPageNumber = 8251896;
 
-			EndPageNumber = 0;
+			DownloadPages = 3000;
 		}
 
 		#endregion
