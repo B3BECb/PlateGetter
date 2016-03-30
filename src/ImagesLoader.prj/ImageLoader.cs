@@ -1,6 +1,7 @@
 ﻿using PlateGetter.Core.Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -75,13 +76,13 @@ namespace PlateGetter.ImagesLoader
 			}
 		}
 
-		public async void LoadOneAsync(int page)
+		public async void LoadOneTaskAsync(int page)
 		{
 			if(_cancelationTokenSource.IsCancellationRequested) _cancelationTokenSource = new CancellationTokenSource();
 
 			try
 			{
-				await LoadOne(page, _cancelationTokenSource.Token).ConfigureAwait(false);
+				await LoadOneAsync(page, _cancelationTokenSource.Token).ConfigureAwait(false);
 			}
 			catch(Exception exc)
 			{
@@ -95,7 +96,7 @@ namespace PlateGetter.ImagesLoader
 
 			while(regexImage == "" && currentPage > _totalPlates && !token.IsCancellationRequested)
 			{
-				regexImage = await GetImageLink(currentPage--);
+				regexImage = await GetImageLinkAsync(currentPage--);
 				OnPageSkiped.BeginInvoke(this, currentPage, null, null);
 			}
 
@@ -111,9 +112,9 @@ namespace PlateGetter.ImagesLoader
 			bitmapImage.EndInit();
 		}
 
-		public async Task LoadOne(int page, CancellationToken token)
+		public async Task LoadOneAsync(int page, CancellationToken token)
 		{
-			string regexImage = await GetImageLink(page);
+			string regexImage = await GetImageLinkAsync(page);
 
 			if(regexImage == "")
 			{
@@ -128,8 +129,43 @@ namespace PlateGetter.ImagesLoader
 			{
 				client.DownloadFileCompleted += ImageDownloadCompleted;
 				client.DownloadProgressChanged += LoadProgressChanged;
-				await client.DownloadFileTaskAsync(regexImage, "images\\foto" + page + ".jpeg");
+				await client.DownloadFileTaskAsync(regexImage, "images\\" + _currentCountry.PlateName + "\\foto" + page + ".jpeg");
 			}				
+		}
+
+		public void LoadOne(int page)
+		{
+			string regexImage = GetImageLink(page);
+
+			if(regexImage == "")
+			{
+				OnPageSkiped.BeginInvoke(this, page, null, null);
+				return;
+			}
+
+			// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
+			regexImage = new Regex("/./").Replace(regexImage, "/o/");
+
+			using(var client = new WebClient())
+			{
+				client.DownloadFileCompleted += ImageDownloadCompleted;
+				client.DownloadProgressChanged += LoadProgressChanged;
+
+				if(!Directory.Exists("images\\" + _currentCountry.PlateName))
+				{
+					Directory.CreateDirectory("images\\" + _currentCountry.PlateName);
+				}
+
+				client.DownloadFileTaskAsync(regexImage, "images\\" + _currentCountry.PlateName + "\\foto" + page + ".jpeg");
+			}
+		}
+
+		public void DownloadAll(int startPage, int stopPage)
+		{
+			Parallel.For(stopPage, startPage, async (page) =>
+			{
+				await LoadOneAsync(page, _cancelationTokenSource.Token).ConfigureAwait(false);
+			});
 		}
 
 		#endregion
@@ -147,7 +183,7 @@ namespace PlateGetter.ImagesLoader
 			OnImageLoaded.BeginInvoke(sender, e, null, null);
 		}
 
-		private async Task<string> GetImageLink(int currentPage)
+		private string GetImageLink(int currentPage)
 		{
 			string pageTitle = _currentCountry.FullName;
 			string regexImage = "";
@@ -157,7 +193,7 @@ namespace PlateGetter.ImagesLoader
 			{
 				using(var webClient = new WebClient())
 				{
-					page = await webClient.DownloadStringTaskAsync(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + currentPage)).ConfigureAwait(false);
+					page = webClient.DownloadString(new Uri("http://platesmania.com/" + _currentCountry.PlateName + "/foto" + currentPage));
 				}
 
 				pageTitle = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;
@@ -173,7 +209,12 @@ namespace PlateGetter.ImagesLoader
 			catch
 			{
 				return "";
-			}			
+			}
+		}
+
+		private async Task<string> GetImageLinkAsync(int currentPage)
+		{
+			return await Task.Factory.StartNew(() => GetImageLink(currentPage));
 		}
 
 		#endregion

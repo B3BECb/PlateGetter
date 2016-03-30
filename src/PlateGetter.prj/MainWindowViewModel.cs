@@ -94,7 +94,7 @@ namespace PlateGetter
 
 		public void OpenFolder()
 		{
-			ValidatePath("images");
+			ValidatePath("images\\" + _settings.SelectedCountry.PlateName);
 
 			Process.Start(new ProcessStartInfo("explorer.exe", "images"));
 		}
@@ -121,14 +121,14 @@ namespace PlateGetter
 
 		/// <summary>Загружает все изображения.</summary>
 		public void DownloadAll()
-		{
-			for(int i = _currentPage; i > _settings.EndPageNumber; i--)
+		{			
+			Parallel.For(_settings.EndPageNumber, _currentPage, (page) => 
 			{
 				_progress = 0;
 				OnPropertyChanged("DownloadProgress");
 
-				_imageLoader.LoadOneAsync(i);
-			}
+				_imageLoader.LoadOne(page);				
+			});
 		}
 
 		/// <summary>Останавливает загрузку изображения.</summary>
@@ -180,11 +180,11 @@ namespace PlateGetter
 			var encoder = new JpegBitmapEncoder();
 			encoder.Frames.Add(BitmapFrame.Create(_image as BitmapImage));
 
-			ValidatePath("images");
+			ValidatePath("images\\" + _settings.SelectedCountry.PlateName);
 
 			try
 			{
-				using(var stream = new FileStream("images\\foto" + _currentPage + ".jpeg", FileMode.CreateNew))
+				using(var stream = new FileStream("images\\" + _settings.SelectedCountry.PlateName + "\\foto" + _currentPage + ".jpeg", FileMode.CreateNew))
 				{
 					encoder.Save(stream);
 				}
