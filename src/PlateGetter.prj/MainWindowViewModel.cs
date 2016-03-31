@@ -20,7 +20,7 @@ namespace PlateGetter
 		
 		public ImageSource Image => _image;
 
-		public int DownlodedImages => _downlodedImages;
+		public int DownlodedImages => _imageLoader.DownloadedImages;
 
 		public int TotalPages => _settings.DownloadPages;
 
@@ -42,8 +42,6 @@ namespace PlateGetter
 		private ProgrammSettings _settings;
 
 		private ImageDownloader _imageLoader;
-
-		private int _downlodedImages;
 
 		private int _currentPage;
 
@@ -74,12 +72,12 @@ namespace PlateGetter
 		{
 			_currentPage = e;
 			OnPropertyChanged("CurrentPage");
+			OnPropertyChanged("DownlodedImages");
 		}
 
 		private void OnImageLoaded(object sender, EventArgs e)
 		{
 			_image = sender as BitmapImage;
-			_downlodedImages++;
 			OnPropertyChanged("Image");
 			OnPropertyChanged("DownlodedImages");
 		}
@@ -90,7 +88,7 @@ namespace PlateGetter
 
 		public void OpenFolder()
 		{
-			ValidatePath("images\\" + _settings.SelectedCountry.PlateName);
+			Utilities.ValidatePath("images\\" + _settings.SelectedCountry.PlateName);
 
 			Process.Start(new ProcessStartInfo("explorer.exe", "images"));
 		}
@@ -100,10 +98,12 @@ namespace PlateGetter
 		{
 			_progress = 0;
 			OnPropertyChanged("DownloadProgress");
+			OnPropertyChanged("DownlodedImages");
 
 			_imageLoader.LoadNextAsync(_currentPage, _settings.StartPageNumber - _settings.DownloadPages);
 
-			SaveImage();
+			_imageLoader.SaveImage(_image as BitmapImage, _currentPage);
+
 		}
 
 		/// <summary>Переходит к следующему изображению.</summary>
@@ -111,6 +111,7 @@ namespace PlateGetter
 		{
 			_progress = 0;
 			OnPropertyChanged("DownloadProgress");
+			OnPropertyChanged("DownlodedImages");
 
 			_imageLoader.LoadNextAsync(_currentPage, _settings.StartPageNumber - _settings.DownloadPages);
 		}
@@ -118,7 +119,7 @@ namespace PlateGetter
 		/// <summary>Загружает все изображения.</summary>
 		public void DownloadAll()
 		{
-			_imageLoader.DownloadAll(_currentPage, _settings.DownloadPages);
+			_imageLoader.DownloadAll(_settings.DownloadPages, _currentPage);
 		}
 
 		/// <summary>Останавливает загрузку изображения.</summary>
@@ -152,38 +153,6 @@ namespace PlateGetter
 		private void OnPropertyChanged(string propertyName)
 		{
 			PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		private void ValidatePath(string path)
-		{
-			if(!Directory.Exists(path))
-			{
-				Directory.CreateDirectory(path);
-			}
-		}
-
-		private bool SaveImage()
-		{
-			if(_image == null) return false;
-
-			var encoder = new JpegBitmapEncoder();
-			encoder.Frames.Add(BitmapFrame.Create(_image as BitmapImage));
-
-			ValidatePath("images\\" + _settings.SelectedCountry.PlateName);
-
-			try
-			{
-				using(var stream = new FileStream("images\\" + _settings.SelectedCountry.PlateName + "\\foto" + _currentPage + ".jpeg", FileMode.CreateNew))
-				{
-					encoder.Save(stream);
-				}
-			}
-			catch
-			{
-				return false;
-			}
-
-			return true;
 		}
 
 		#endregion
