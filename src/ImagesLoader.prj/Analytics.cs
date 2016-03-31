@@ -49,7 +49,7 @@ namespace PlateGetter.ImagesLoader
 
 		private static void SaveInXmlFormat(object objGraph, string fileName)
 		{
-			XmlSerializer xmlFormat = new XmlSerializer(typeof(CarInfo));
+			XmlSerializer xmlFormat = new XmlSerializer(typeof(CarInfo));///////////////////////////////////////////!
 			using(Stream fStream = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.None))
 			{
 				xmlFormat.Serialize(fStream, objGraph);

@@ -53,7 +53,6 @@ namespace PlateGetter.ImagesLoader
 
 		#endregion
 
-
 		#region Public methods
 
 		public void CancelDownload()
@@ -63,6 +62,8 @@ namespace PlateGetter.ImagesLoader
 
 		public async void LoadNextAsync(int startPage, int endPage)
 		{
+			_downlodedImages = 0;
+
 			if(_cancelationTokenSource.IsCancellationRequested) _cancelationTokenSource = new CancellationTokenSource();
 
 			try
@@ -97,7 +98,7 @@ namespace PlateGetter.ImagesLoader
 			bitmapImage.EndInit();
 		}
 
-		public async Task LoadOneAsync(int page, CancellationToken token)
+		public async void LoadOneAsync(int page, CancellationToken token)
 		{
 			string regexImage = await GetImageLinkAsync(page);
 
@@ -119,12 +120,18 @@ namespace PlateGetter.ImagesLoader
 			}				
 		}		
 
-		public void DownloadAll(int startPage, int stopPage)
+		public async Task DownloadAll(int startPage, int stopPage)
 		{
-			Parallel.For(startPage, stopPage, async (page) =>
+			_downlodedImages = 0;
+			while(_downlodedImages < stopPage)
 			{
-				await LoadOneAsync(page, _cancelationTokenSource.Token).ConfigureAwait(false);
-			});
+				await Task.Factory.StartNew(() => LoadOneAsync(startPage--, _cancelationTokenSource.Token)).ConfigureAwait(false);
+			}
+
+			//Parallel.For(startPage, stopPage, async (page) =>
+			//{
+			//	await LoadOneAsync(page, _cancelationTokenSource.Token).ConfigureAwait(false);
+			//});
 		}
 		
 		public bool SaveImage(BitmapImage image, int page)
@@ -154,7 +161,6 @@ namespace PlateGetter.ImagesLoader
 		}
 
 		#endregion
-
 
 		#region Private methods
 

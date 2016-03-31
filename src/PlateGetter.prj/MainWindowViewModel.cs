@@ -119,7 +119,7 @@ namespace PlateGetter
 		/// <summary>Загружает все изображения.</summary>
 		public void DownloadAll()
 		{
-			_imageLoader.DownloadAll(_settings.DownloadPages, _currentPage);
+			_imageLoader.DownloadAll(_currentPage - _settings.DownloadPages, _currentPage).ConfigureAwait(false);
 		}
 
 		/// <summary>Останавливает загрузку изображения.</summary>
