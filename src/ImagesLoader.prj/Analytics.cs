@@ -1,5 +1,6 @@
 ﻿using PlateGetter.Core;
 using PlateGetter.Core.Helpers;
+using PlateGetter.Core.Logger;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -60,20 +61,23 @@ namespace PlateGetter.ImagesLoader
 
 		public static void Analize(List<Country> countries)
 		{
+			Log.LogInfo("Analize started");
 			foreach(var country in countries)
 			{
-				var s = new RootCarInfo();
-				s.Carinfos = new CarInfo[] { new CarInfo("1", "2", "3", "4") , new CarInfo("5", "6", "7", "8") , new CarInfo("9", "0", "-", "=") };
-				if(File.Exists($"images\\{country.PlateName}\\Analytics\\Statistics.xml")) LoadFromXmlFormat($"images\\{country.PlateName}\\Analytics\\Statistics.xml");
-					//SaveInXmlFormat(s, $"images\\{country.PlateName}\\Analytics\\Statistics.xml");
+				if(File.Exists($"images\\{country.PlateName}\\Analytics\\Statistics.xml"))
+				{
+					var plates = LoadFromXmlFormat($"images\\{country.PlateName}\\Analytics\\Statistics.xml");
+					Log.LogDebug($"Founded statistic for {country}. Total plates:{plates.Count}.");
+				}
 			}
+			Log.LogInfo("Analize finished");
 		}
 
 		private static void SaveInXmlFormat(object objGraph, string fileName)
 		{
 			lock(_syncRoot)
 			{
-				XmlSerializer xmlFormat = new XmlSerializer(typeof(RootCarInfo));
+				XmlSerializer xmlFormat = new XmlSerializer(typeof(CarInfo));
 				using(Stream fStream = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.None))
 				{
 					xmlFormat.Serialize(fStream, objGraph);
@@ -83,24 +87,44 @@ namespace PlateGetter.ImagesLoader
 
 		private static List<CarInfo> LoadFromXmlFormat(string fileName)
 		{
-			lock (_syncRoot)
+			List<CarInfo> plateInfoList = new List<CarInfo>();
+			
+			// 1. remove <?xml version="1.0"?>
+			// 2. add <?xml version="1.0"?><RootCarInfo><Carinfos>
+			// 3. add doc body
+			// 4. add </Carinfos></RootCarInfo> 
+
+			PrepareFile(fileName);
+
+			XmlSerializer xmlFormat = new XmlSerializer(typeof(RootCarInfo));
+			using(Stream fStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None))
 			{
-				List<CarInfo> info = new List<CarInfo>();
-
-				// 1. remove <?xml version="1.0"?>
-				// 2. add <?xml version="1.0"?><RootCarInfo><Carinfos>
-				// 3. add doc body
-				// 4. add </Carinfos></RootCarInfo> 
-
-
-				XmlSerializer xmlFormat = new XmlSerializer(typeof(RootCarInfo));
-				using(Stream fStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None))
+				var a = xmlFormat.Deserialize(fStream);
+				foreach(var plate in (a as RootCarInfo).Carinfos)
 				{
-					var a = xmlFormat.Deserialize(fStream);
-					info.Add(a as CarInfo);
-				}
-				return info;
+					plateInfoList.Add(plate);
+				}			
 			}
+			return plateInfoList;			
+		}
+
+		/// <summary>
+		/// Prepare text in a file.
+		/// </summary>
+		/// <param name="filePath">Path of the text file.</param>
+		/// <param name="searchText">Text to search for.</param>
+		/// <param name="replaceText">Text to replace the search text.</param>
+		static private void PrepareFile(string filePath)
+		{
+			StreamReader reader = new StreamReader(filePath);
+			string content = reader.ReadToEnd();
+			reader.Close();
+
+			content = Regex.Replace(content, "<.xml version=.1.0..>|<RootCarInfo><Carinfos>|<.Carinfos></RootCarInfo>", "");
+
+			StreamWriter writer = new StreamWriter(filePath);
+			writer.Write("<?xml version=\"1.0\"?><RootCarInfo><Carinfos>" + content + "</Carinfos></RootCarInfo>");
+			writer.Close();
 		}
 	}
 }
