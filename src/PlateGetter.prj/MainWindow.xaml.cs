@@ -33,7 +33,7 @@ namespace PlateGetter
 
 		public void Dispose()
 		{
-			
+			_viewModel.Dispose();
 		}
 
 		private void OnSettingsClick(object sender, RoutedEventArgs e)
@@ -64,6 +64,11 @@ namespace PlateGetter
 		private void button2_Click(object sender, RoutedEventArgs e)
 		{
 			_viewModel.OpenFolder();
+		}
+
+		private void OnLogClick(object sender, RoutedEventArgs e)
+		{
+			_viewModel.ShowLog();
 		}
 	}
 }

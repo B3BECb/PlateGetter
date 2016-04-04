@@ -127,11 +127,6 @@ namespace PlateGetter.ImagesLoader
 			{
 				await Task.Factory.StartNew(() => LoadOneAsync(startPage--, _cancelationTokenSource.Token)).ConfigureAwait(false);
 			}
-
-			//Parallel.For(startPage, stopPage, async (page) =>
-			//{
-			//	await LoadOneAsync(page, _cancelationTokenSource.Token).ConfigureAwait(false);
-			//});
 		}
 		
 		public bool SaveImage(BitmapImage image, int page)
@@ -172,6 +167,7 @@ namespace PlateGetter.ImagesLoader
 		{
 			(sender as BitmapImage)?.Freeze();
 			OnImageLoaded.BeginInvoke(sender, e, null, null);
+			Task.Factory.StartNew(() => Log.LogDebug("Image loaded"));
 		}
 
 		private string GetImageLink(int currentPage)
@@ -189,11 +185,19 @@ namespace PlateGetter.ImagesLoader
 
 				pageTitle = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;
 
-				if(pageTitle.ToLower() == CurrentCountry.FullName.ToLower()) return "";
+				if(pageTitle.ToLower() == CurrentCountry.FullName.ToLower())
+				{
+					Task.Factory.StartNew(() => Log.LogWarning($"Page {currentPage} not found"));
+					return "";
+				}
 
 				regexImage = new Regex("<img src=\"?(.*jpg)\"? class=\"img-responsive center-block.*>").Matches(page)[0].Groups[1].Value;
 
-				if(regexImage.Length < 3) return "";
+				if(regexImage.Length < 3)
+				{
+					Task.Factory.StartNew(() => Log.LogWarning($"Page {currentPage} has incorect format"));
+					return "";
+				}
 
 				Task.Factory.StartNew(() =>
 				{
@@ -201,12 +205,15 @@ namespace PlateGetter.ImagesLoader
 					var regexDiscription = new Regex("<img .*alt=\"(.*)\" .*>").Matches(page)[0].Groups[1].Value;
 
 					Analytics.WriteAnalyticsData(regexDiscription, regexImage, CurrentCountry.PlateName);
-				});			
+				});
+
+				Task.Factory.StartNew(() => Log.LogDebug("Founded image " + regexImage));
 
 				return regexImage;
 			}
-			catch
+			catch(Exception exc)
 			{
+				Task.Factory.StartNew(() => Log.LogError(nameof(GetImageLink), exc));
 				return "";
 			}
 		}

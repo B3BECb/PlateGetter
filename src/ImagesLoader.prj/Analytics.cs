@@ -35,6 +35,8 @@ namespace PlateGetter.ImagesLoader
 				TotalPlateInfo	= totalPlateInfo;
 			}
 		}
+
+		private static object _syncRoot = new object();
 		
 		public static void WriteAnalyticsData(string plateInfo, string fotoUrl, string plateName)
 		{
@@ -49,10 +51,13 @@ namespace PlateGetter.ImagesLoader
 
 		private static void SaveInXmlFormat(object objGraph, string fileName)
 		{
-			XmlSerializer xmlFormat = new XmlSerializer(typeof(CarInfo));///////////////////////////////////////////!
-			using(Stream fStream = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.None))
+			lock(_syncRoot)
 			{
-				xmlFormat.Serialize(fStream, objGraph);
+				XmlSerializer xmlFormat = new XmlSerializer(typeof(CarInfo));
+				using(Stream fStream = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.None))
+				{
+					xmlFormat.Serialize(fStream, objGraph);
+				}
 			}
 		}
 	}

@@ -14,7 +14,7 @@ using System.Diagnostics;
 
 namespace PlateGetter
 {
-	internal sealed class MainWindowViewModel : INotifyPropertyChanged
+	internal sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 	{				
 		#region Properties
 		
@@ -33,7 +33,6 @@ namespace PlateGetter
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion
-
 		
 		#region Data
 
@@ -42,6 +41,8 @@ namespace PlateGetter
 		private ProgrammSettings _settings;
 
 		private ImageDownloader _imageLoader;
+
+		private LogWindow _logWindow = new LogWindow();
 
 		private int _currentPage;
 
@@ -129,7 +130,7 @@ namespace PlateGetter
 			_progress = 0;
 		}
 
-		internal void Settings()
+		public void Settings()
 		{
 			Stop();
 
@@ -146,10 +147,29 @@ namespace PlateGetter
 			}
 		}
 
+		public void ShowLog()
+		{
+			if(_logWindow.ShowActivated)
+			{
+				_logWindow.Show();
+				Log.LogInfo("Консоль открыта");
+			}
+			else
+			{
+				_logWindow.Hide();
+				Log.LogInfo("Консоль закрыта");
+			}
+		}
+
+		public void Dispose()
+		{
+			_logWindow.Dispose();
+		}
+
 		#endregion
 
 		#region Private methods
-		
+
 		private void OnPropertyChanged(string propertyName)
 		{
 			PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
