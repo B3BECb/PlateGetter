@@ -96,6 +96,11 @@ namespace PlateGetter
 			Process.Start(new ProcessStartInfo("explorer.exe", "images"));
 		}
 
+		public void AnalizeData()
+		{
+			Analytics.Analize(_settings.CountriesList);
+		}
+
 		/// <summary>Сохраняет текущее изображение.</summary>
 		public void Save()
 		{

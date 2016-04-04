@@ -70,5 +70,10 @@ namespace PlateGetter
 		{
 			_viewModel.ShowLog();
 		}
+
+		private void OnAnaliticClick(object sender, RoutedEventArgs e)
+		{
+			_viewModel.AnalizeData();
+		}
 	}
 }

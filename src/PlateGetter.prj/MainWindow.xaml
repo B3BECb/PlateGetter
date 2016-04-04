@@ -55,6 +55,7 @@
                 </LinearGradientBrush>
             </Menu.Background>
             <MenuItem Header="Настройки" Click="OnSettingsClick"/>
+            <MenuItem Header="Аналитика" Click="OnAnaliticClick"/>
             <MenuItem Header="Лог" Click="OnLogClick"/>
         </Menu>
         <ProgressBar Value="{Binding DownloadProgress, Mode=OneWay}" Height="10" VerticalAlignment="Bottom" Background="#FFD3D1D1" BorderBrush="#FF919191"/>
