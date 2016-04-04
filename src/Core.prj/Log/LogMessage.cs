@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace PlateGetter.Core.Helpers
+namespace PlateGetter.Core.Log
 {
 	public class LogMessage
 	{

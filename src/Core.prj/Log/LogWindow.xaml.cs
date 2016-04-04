@@ -1,13 +1,11 @@
-﻿using PlateGetter.Core;
-using System.Windows;
+﻿using System.Windows;
 using System.ComponentModel;
 using System;
-using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Threading;
-using PlateGetter.Core.Helpers;
+using System.Collections.Generic;
+using System.Windows.Controls;
 
-namespace PlateGetter
+namespace PlateGetter.Core.Log
 {
 	/// <summary>
 	/// Логика взаимодействия для MainWindow.xaml
@@ -16,23 +14,26 @@ namespace PlateGetter
 	{
 		private bool _isDisposing;
 
+		private LogViewModel _viewModel = new LogViewModel();
+
 		public LogWindow()
 		{
-			InitializeComponent();
+			DataContext = _viewModel;
 
-			Log.OnLogged += OnLogged;
+			_viewModel.PropertyChanged += PropertyChanged;
+
+			InitializeComponent(); 
 		}
 
-		private void OnLogged(object sender, LogMessage e)
+		private void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			Dispatcher.Invoke(
-			() =>
+			Dispatcher.Invoke(() =>
 			{
-				var element = new Run(e.Message) { Foreground = e.Brush };
-				textBlock.Inlines.Add(element);
+				var runs = (sender as LogViewModel).Runs;
+				_panel.Children.Add(new Label() { Content = runs.Message, Foreground = runs.Brush});
 			});
 		}
-		
+
 		private void Window_Closing(object sender, CancelEventArgs e)
 		{
 			if(!_isDisposing)

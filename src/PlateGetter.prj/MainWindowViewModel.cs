@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Diagnostics;
+using PlateGetter.Core.Log;
 
 namespace PlateGetter
 {
@@ -148,16 +149,16 @@ namespace PlateGetter
 		}
 
 		public void ShowLog()
-		{
+		{			
 			if(_logWindow.ShowActivated)
 			{
 				_logWindow.Show();
-				Log.LogInfo("Консоль открыта");
-			}
+				Log.LogInfo("Лог открыт");
+			}		
 			else
 			{
 				_logWindow.Hide();
-				Log.LogInfo("Консоль закрыта");
+				Log.LogInfo("Лог закрыт");
 			}
 		}
 

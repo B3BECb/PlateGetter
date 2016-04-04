@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-namespace PlateGetter.Core
+namespace PlateGetter.Core.Log
 {
 	public static class Log
 	{
