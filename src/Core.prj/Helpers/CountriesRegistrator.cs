@@ -1,8 +1,10 @@
-﻿using System;
+﻿using PlateGetter.Core.Logger;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace PlateGetter.Core.Helpers
 {
@@ -17,14 +19,20 @@ namespace PlateGetter.Core.Helpers
 			RegistredCountries = new List<Country>();
 
 			RegistredCountries.Add(new Country("lithuania", "lt"));
-			RegistredCountries.Add(new Country("poland", "pl"));
-			RegistredCountries.Add(new Country("bulgaria", "bg"));
-			RegistredCountries.Add(new Country("turkey", "tr"));
-			RegistredCountries.Add(new Country("estonia", "ee"));
-			RegistredCountries.Add(new Country("hungary", "hu"));
-			RegistredCountries.Add(new Country("moldova", "md"));
-			RegistredCountries.Add(new Country("czech republic", "cz"));
 
+			RegistredCountries.Add(new Country("poland", "pl"));
+
+			RegistredCountries.Add(new Country("bulgaria", "bg"));
+
+			RegistredCountries.Add(new Country("turkey", "tr"));
+
+			RegistredCountries.Add(new Country("estonia", "ee"));
+
+			RegistredCountries.Add(new Country("hungary", "hu"));
+
+			RegistredCountries.Add(new Country("moldova", "md"));
+
+			RegistredCountries.Add(new Country("czech republic", "cz"));
 		}
 	}
 }

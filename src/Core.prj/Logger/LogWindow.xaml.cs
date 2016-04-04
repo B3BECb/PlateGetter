@@ -4,8 +4,9 @@ using System;
 using System.Windows.Documents;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using System.Windows.Shapes;
 
-namespace PlateGetter.Core.Log
+namespace PlateGetter.Core.Logger
 {
 	/// <summary>
 	/// Логика взаимодействия для MainWindow.xaml
@@ -14,23 +15,20 @@ namespace PlateGetter.Core.Log
 	{
 		private bool _isDisposing;
 
-		private LogViewModel _viewModel = new LogViewModel();
-
 		public LogWindow()
 		{
-			DataContext = _viewModel;
-
-			_viewModel.PropertyChanged += PropertyChanged;
+			Log.OnLogged += OnLogged;
 
 			InitializeComponent(); 
 		}
 
-		private void PropertyChanged(object sender, PropertyChangedEventArgs e)
+		private void OnLogged(object sender, LogMessage e)
 		{
 			Dispatcher.Invoke(() =>
 			{
-				var runs = (sender as LogViewModel).Runs;
-				_panel.Children.Add(new Label() { Content = runs.Message, Foreground = runs.Brush});
+				_txtLog.Inlines.Add(new Run(e.Message) { Foreground = e.TextBrush});
+				_txtLog.Inlines.Add(new LineBreak());
+
 			});
 		}
 

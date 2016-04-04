@@ -1,5 +1,6 @@
 ﻿using PlateGetter.Core;
 using PlateGetter.Core.Helpers;
+using PlateGetter.Core.Logger;
 using System;
 using System.ComponentModel;
 
@@ -55,8 +56,13 @@ namespace PlateGetter.Settings
 		internal void Apply()
 		{
 			_settings.DownloadPages = DownloadPages;
+			Log.LogInfo("Pages to download: " + DownloadPages);
+
 			_settings.StartPageNumber = StartPageNumber;
+			Log.LogInfo("Start page number: " + StartPageNumber);
+
 			_settings.SelectedCountry = _selectedCountry;
+			Log.LogInfo("Selected country " + _selectedCountry);
 		}
 
 		#endregion

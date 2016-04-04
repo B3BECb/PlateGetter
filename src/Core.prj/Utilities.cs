@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using PlateGetter.Core.Logger;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PlateGetter.Core
 {
@@ -14,6 +10,7 @@ namespace PlateGetter.Core
 			if(!Directory.Exists(path))
 			{
 				Directory.CreateDirectory(path);
+				Log.LogDebug("Created directory " + path);
 			}
 		}
 	}

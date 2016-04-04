@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Diagnostics;
-using PlateGetter.Core.Log;
+using PlateGetter.Core.Logger;
 
 namespace PlateGetter
 {
@@ -75,6 +75,7 @@ namespace PlateGetter
 			_currentPage = e;
 			OnPropertyChanged("CurrentPage");
 			OnPropertyChanged("DownlodedImages");
+			Log.LogDebug("Page skiped. Page: " + e);
 		}
 
 		private void OnImageLoaded(object sender, EventArgs e)
@@ -101,7 +102,7 @@ namespace PlateGetter
 			_progress = 0;
 			OnPropertyChanged("DownloadProgress");
 			OnPropertyChanged("DownlodedImages");
-
+			
 			_imageLoader.LoadNextAsync(_currentPage, _settings.StartPageNumber - _settings.DownloadPages);
 
 			_imageLoader.SaveImage(_image as BitmapImage, _currentPage);
@@ -129,6 +130,7 @@ namespace PlateGetter
 		{
 			_imageLoader.CancelDownload();
 			_progress = 0;
+			Log.LogInfo("Load cancalled");
 		}
 
 		public void Settings()

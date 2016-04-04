@@ -1,6 +1,6 @@
 ﻿using PlateGetter.Core;
 using PlateGetter.Core.Helpers;
-using PlateGetter.Core.Log;
+using PlateGetter.Core.Logger;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -63,6 +63,7 @@ namespace PlateGetter.ImagesLoader
 
 		public async void LoadNextAsync(int startPage, int endPage)
 		{
+			Log.LogDebug("Search started");
 			_downlodedImages = 0;
 
 			if(_cancelationTokenSource.IsCancellationRequested) _cancelationTokenSource = new CancellationTokenSource();
@@ -73,8 +74,11 @@ namespace PlateGetter.ImagesLoader
 			}
 			catch(Exception exc)
 			{
-
+				Log.LogError(nameof(LoadNextAsync), exc);
+				Log.LogDebug("Search terminated");
 			}
+
+			Log.LogDebug("Search finished");
 		}
 		
 		public async Task LoadNext(int page, int endPage, CancellationToken token)
@@ -123,11 +127,13 @@ namespace PlateGetter.ImagesLoader
 
 		public async Task DownloadAll(int startPage, int stopPage)
 		{
+			Log.LogDebug("Download all started");
 			_downlodedImages = 0;
-			while(_downlodedImages < stopPage)
+			while(_downlodedImages < stopPage && !_cancelationTokenSource.IsCancellationRequested)
 			{
 				await Task.Factory.StartNew(() => LoadOneAsync(startPage--, _cancelationTokenSource.Token)).ConfigureAwait(false);
 			}
+			Log.LogDebug("Download all finished");
 		}
 		
 		public bool SaveImage(BitmapImage image, int page)

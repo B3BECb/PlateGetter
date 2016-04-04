@@ -5,24 +5,26 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace PlateGetter.Core.Log
+namespace PlateGetter.Core.Logger
 {
 	public class LogMessage
 	{
 		public string Message { get; private set; }
 
-		public SolidColorBrush Brush { get; private set; }
-
+		public SolidColorBrush TextBrush { get; private set; }
+		
 		public LogMessage(string message)
 		{
 			Message = message;
-			Brush = new SolidColorBrush(Colors.Black);
+			TextBrush = new SolidColorBrush(Colors.Black);
+			TextBrush.Freeze();
 		}
 
 		public LogMessage(string message, Color color)
 		{
 			Message = message;
-			Brush = new SolidColorBrush(color);
+			TextBrush = new SolidColorBrush(color);
+			TextBrush.Freeze();
 		}
 	}
 }
