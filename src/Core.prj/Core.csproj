@@ -62,12 +62,6 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AnalyticVisualizer\AnalyticVisualizer.csproj">
-      <Project>{fb85ff37-7dda-48b0-83c3-f4f368fccf6b}</Project>
-      <Name>AnalyticVisualizer</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
