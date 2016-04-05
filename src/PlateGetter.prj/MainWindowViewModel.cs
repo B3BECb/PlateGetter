@@ -76,7 +76,6 @@ namespace PlateGetter
 			_currentPage = e;
 			OnPropertyChanged("CurrentPage");
 			OnPropertyChanged("DownlodedImages");
-			Log.LogDebug("Page skiped. Page: " + e);
 		}
 
 		private void OnImageLoaded(object sender, EventArgs e)
@@ -128,7 +127,7 @@ namespace PlateGetter
 		/// <summary>Загружает все изображения.</summary>
 		public void DownloadAll()
 		{
-			_imageLoader.DownloadAll(_currentPage - _settings.DownloadPages, _currentPage).ConfigureAwait(false);
+			_imageLoader.DownloadAll(_currentPage - _settings.DownloadPages, _settings.DownloadPages).ConfigureAwait(false);
 		}
 
 		/// <summary>Останавливает загрузку изображения.</summary>

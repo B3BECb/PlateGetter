@@ -60,6 +60,7 @@ namespace PlateGetter.ImagesLoader
 		public void CancelDownload()
 		{
 			_cancelationTokenSource?.Cancel();
+			Log.LogDebug("Download canceled");
 		}
 
 		public async void LoadNextAsync(int startPage, int endPage)
@@ -93,7 +94,8 @@ namespace PlateGetter.ImagesLoader
 			}
 
 			// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
-			regexImage = new Regex("/./").Replace(regexImage, "/o/");
+			regexImage = regexImage.Replace("/m/", "/o/");
+			//regexImage = new Regex("/./").Replace(regexImage, "/o/");
 
 			BitmapImage bitmapImage = new BitmapImage();
 			bitmapImage.DownloadCompleted += ImageDownloadCompleted;
@@ -106,7 +108,7 @@ namespace PlateGetter.ImagesLoader
 
 		public async void LoadOneAsync(int page, CancellationToken token)
 		{
-			string regexImage = await GetImageLinkAsync(page);
+			string regexImage = await GetImageLinkAsync(page).ConfigureAwait(false);
 
 			if(regexImage == "")
 			{
@@ -115,24 +117,31 @@ namespace PlateGetter.ImagesLoader
 			}
 
 			// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
-			regexImage = new Regex("/./").Replace(regexImage, "/o/");
+			regexImage = regexImage.Replace("/m/", "/o/");
+			//regexImage = new Regex("/./").Replace(regexImage, "/o/");
+
+			if(token.IsCancellationRequested) return;
 
 			using(var client = new WebClient())
 			{
 				client.DownloadFileCompleted += ImageDownloadCompleted;
 				client.DownloadProgressChanged += LoadProgressChanged;
-				await client.DownloadFileTaskAsync(regexImage, "images\\" + CurrentCountry.PlateName + "\\foto" + page + ".jpeg");
+				await client.DownloadFileTaskAsync(regexImage, "images\\" + CurrentCountry.PlateName + "\\foto" + page + ".jpeg").ConfigureAwait(false);
 				_downlodedImages++;
 			}				
 		}		
 
 		public async Task DownloadAll(int startPage, int stopPage)
 		{
+			if(_cancelationTokenSource.IsCancellationRequested) _cancelationTokenSource = new CancellationTokenSource();
+
 			Log.LogDebug("Download all started");
+
 			_downlodedImages = 0;
 			while(_downlodedImages < stopPage && !_cancelationTokenSource.IsCancellationRequested)
 			{
 				await Task.Factory.StartNew(() => LoadOneAsync(startPage--, _cancelationTokenSource.Token)).ConfigureAwait(false);
+				Thread.Sleep(10);
 			}
 			Log.LogDebug("Download all finished");
 		}
@@ -175,10 +184,10 @@ namespace PlateGetter.ImagesLoader
 		{
 			(sender as BitmapImage)?.Freeze();
 			OnImageLoaded.BeginInvoke(sender, e, null, null);
-			Task.Factory.StartNew(() => Log.LogDebug("Image loaded"));
+			Log.LogDebug("Image loaded");
 		}
 
-		private string GetImageLink(int currentPage)
+		private async Task<string> GetImageLink(int currentPage)
 		{
 			string pageTitle = CurrentCountry.FullName;
 			string regexImage = "";
@@ -188,14 +197,14 @@ namespace PlateGetter.ImagesLoader
 			{
 				using(var webClient = new WebClient())
 				{
-					page = webClient.DownloadString(new Uri("http://platesmania.com/" + CurrentCountry.PlateName + "/foto" + currentPage));
+					page = await webClient.DownloadStringTaskAsync(new Uri("http://platesmania.com/" + CurrentCountry.PlateName + "/foto" + currentPage)).ConfigureAwait(false);
 				}
 
 				pageTitle = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;
 
 				if(pageTitle.ToLower() == CurrentCountry.FullName.ToLower())
 				{
-					Task.Factory.StartNew(() => Log.LogWarning($"Page {currentPage} not found"));
+					Log.LogWarning($"Page {currentPage} not found");
 					return "";
 				}
 
@@ -203,32 +212,32 @@ namespace PlateGetter.ImagesLoader
 
 				if(regexImage.Length < 3)
 				{
-					Task.Factory.StartNew(() => Log.LogWarning($"Page {currentPage} has incorect format"));
+					Log.LogWarning($"Page {currentPage} has incorect format");
 					return "";
 				}
 
-				Task.Factory.StartNew(() =>
+				await Task.Factory.StartNew(() =>
 				{
 					Utilities.ValidatePath("images\\" + CurrentCountry.PlateName + "\\Analytics");
 					var regexDiscription = new Regex("<img .*alt=\"(.*)\" .*>").Matches(page)[0].Groups[1].Value;
 
 					Analytics.WriteAnalyticsData(regexDiscription, regexImage, CurrentCountry.PlateName);
-				});
+				}).ConfigureAwait(false);
 
-				Task.Factory.StartNew(() => Log.LogDebug("Founded image " + regexImage));
+				Log.LogDebug("Founded image " + regexImage);
 
 				return regexImage;
 			}
 			catch(Exception exc)
 			{
-				Task.Factory.StartNew(() => Log.LogError(nameof(GetImageLink), exc));
+				Log.LogError(nameof(GetImageLink), exc);
 				return "";
 			}
 		}
 
 		private async Task<string> GetImageLinkAsync(int currentPage)
 		{
-			return await Task.Factory.StartNew(() => GetImageLink(currentPage));
+			return await GetImageLink(currentPage).ConfigureAwait(false);
 		}
 
 		#endregion
