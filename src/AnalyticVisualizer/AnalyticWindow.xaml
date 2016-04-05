@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid x:Name="mainGrid">
-        <ContentControl Content="{Binding}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  ContentTemplate="{StaticResource}"/>
+        <ContentControl Content="{Binding}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  ContentTemplate="{StaticResource PageContent}"/>
         <Grid.LayoutTransform>
             <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="1.0" ScaleY="1.0" />
         </Grid.LayoutTransform>
