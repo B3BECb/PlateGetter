@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.IO;
 using System.Diagnostics;
 using PlateGetter.Core.Logger;
+using PlateGetter.Core.Analytic;
 
 namespace PlateGetter
 {

@@ -1,4 +1,5 @@
 ﻿using PlateGetter.Core;
+using PlateGetter.Core.Analytic;
 using PlateGetter.Core.Helpers;
 using PlateGetter.Core.Logger;
 using System;

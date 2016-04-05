@@ -1,4 +1,5 @@
-﻿using PlateGetter.Core;
+﻿using AnalyticVisualizer;
+using PlateGetter.Core;
 using PlateGetter.Core.Helpers;
 using PlateGetter.Core.Logger;
 using System;
@@ -10,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace PlateGetter.ImagesLoader
+namespace PlateGetter.Core.Analytic
 {
 	public class Analytics
 	{
@@ -52,11 +53,13 @@ namespace PlateGetter.ImagesLoader
 		{
 			var plateNumberOriginal = plateInfo.Split(',').FirstOrDefault().ToLower();
 			var plateNumberMask = new Regex("[a-z]").Replace(plateNumberOriginal, "X");
-			plateNumberMask = new Regex("[1-9]").Replace(plateNumberMask, "9");
+			plateNumberMask = new Regex("[0-9]").Replace(plateNumberMask, "9");
 
 			var car = new CarInfo(plateNumberOriginal, plateNumberMask, fotoUrl, plateInfo);
 
 			SaveInXmlFormat(car, $"images\\{plateName}\\Analytics\\Statistics.xml");
+
+			Log.LogDebug($"Serialized plate: {plateNumberOriginal}. Plate template: {plateNumberMask}");
 		}
 
 		public static void Analize(List<Country> countries)
@@ -68,6 +71,11 @@ namespace PlateGetter.ImagesLoader
 				{
 					var plates = LoadFromXmlFormat($"images\\{country.PlateName}\\Analytics\\Statistics.xml");
 					Log.LogDebug($"Founded statistic for {country}. Total plates:{plates.Count}.");
+					
+					using(var form = new AnalyticWindow(CountTemplates(plates)))
+					{
+						if(form.ShowDialog() == true) { }
+					}
 				}
 			}
 			Log.LogInfo("Analize finished");
@@ -125,6 +133,27 @@ namespace PlateGetter.ImagesLoader
 			StreamWriter writer = new StreamWriter(filePath);
 			writer.Write("<?xml version=\"1.0\"?><RootCarInfo><Carinfos>" + content + "</Carinfos></RootCarInfo>");
 			writer.Close();
+		}
+
+		static private Dictionary<string, int> CountTemplates(List<CarInfo> platesList)
+		{
+			Dictionary<string, int> countedTemplates = new Dictionary<string, int>();
+
+			//grouping
+			var templatesList = platesList.GroupBy(v => v.PlateMask).Where(g => g.Count() > 1).Select(g => g.Key);
+
+			foreach(var groupedTemplate in templatesList)
+			{
+				countedTemplates.Add(groupedTemplate, platesList.Count(e => e.PlateMask == groupedTemplate));
+				platesList.RemoveAll(e => e.PlateMask == groupedTemplate);
+			}
+
+			foreach(var template in platesList)
+			{
+				countedTemplates.Add(template.PlateMask, 1);
+			}
+
+			return countedTemplates;
 		}
 	}
 }
