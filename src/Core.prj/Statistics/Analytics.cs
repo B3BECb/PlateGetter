@@ -1,5 +1,4 @@
-﻿using AnalyticVisualizer;
-using PlateGetter.Core;
+﻿using PlateGetter.Core;
 using PlateGetter.Core.Helpers;
 using PlateGetter.Core.Logger;
 using System;
@@ -11,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace PlateGetter.Core.Analytic
+namespace PlateGetter.Core.Statistics
 {
 	public class Analytics
 	{
@@ -65,20 +64,23 @@ namespace PlateGetter.Core.Analytic
 		public static void Analize(List<Country> countries)
 		{
 			Log.LogInfo("Analize started");
+			List<CarInfo> plates;
+			Dictionary<string, List<Plate>> countriesTemplates = new Dictionary<string, List<Plate>>();
 			foreach(var country in countries)
 			{
 				if(File.Exists($"images\\{country.PlateName}\\Analytics\\Statistics.xml"))
 				{
-					var plates = LoadFromXmlFormat($"images\\{country.PlateName}\\Analytics\\Statistics.xml");
+					plates = LoadFromXmlFormat($"images\\{country.PlateName}\\Analytics\\Statistics.xml");
 					Log.LogDebug($"Founded statistic for {country}. Total plates:{plates.Count}.");
 					
-					using(var form = new AnalyticWindow(CountTemplates(plates)))
-					{
-						if(form.ShowDialog() == true) { }
-					}
+					countriesTemplates.Add(country.FullName, CountTemplates(plates));					
 				}
 			}
 			Log.LogInfo("Analize finished");
+			using(var form = new AnalyticWindow(countriesTemplates))
+			{
+				if(form.ShowDialog() == true) { }
+			}
 		}
 
 		private static void SaveInXmlFormat(object objGraph, string fileName)
@@ -135,22 +137,21 @@ namespace PlateGetter.Core.Analytic
 			writer.Close();
 		}
 
-		static private Dictionary<string, int> CountTemplates(List<CarInfo> platesList)
+		static private List<Plate> CountTemplates(List<CarInfo> platesList)
 		{
-			Dictionary<string, int> countedTemplates = new Dictionary<string, int>();
+			List<Plate> countedTemplates = new List<Plate>();
 
-			//grouping
 			var templatesList = platesList.GroupBy(v => v.PlateMask).Where(g => g.Count() > 1).Select(g => g.Key);
 
 			foreach(var groupedTemplate in templatesList)
 			{
-				countedTemplates.Add(groupedTemplate, platesList.Count(e => e.PlateMask == groupedTemplate));
+				countedTemplates.Add(new Plate(groupedTemplate, platesList.Count(e => e.PlateMask == groupedTemplate)));
 				platesList.RemoveAll(e => e.PlateMask == groupedTemplate);
 			}
 
 			foreach(var template in platesList)
 			{
-				countedTemplates.Add(template.PlateMask, 1);
+				countedTemplates.Add(new Plate(template.PlateMask));
 			}
 
 			return countedTemplates;

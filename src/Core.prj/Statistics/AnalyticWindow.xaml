@@ -1,0 +1,14 @@
+﻿<Window x:Class="PlateGetter.Core.Statistics.AnalyticWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:chart="clr-namespace:De.TorstenMandelkow.MetroChart;assembly=De.TorstenMandelkow.MetroChart" 
+		xmlns:local="clr-namespace:PlateGetter.Core.Statistics"
+		Title="AnalyticWindow" Height="300" Width="300">
+	<Grid>
+		<ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" BorderThickness="0" >
+			<Grid Name="grid"/>
+		</ScrollViewer>
+	</Grid>
+		
+</Window>
