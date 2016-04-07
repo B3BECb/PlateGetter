@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PlateGetter"
         mc:Ignorable="d"
-        Title="MainWindow" Height="354" Width="525">
+        Title="MainWindow" Height="370" Width="525">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -38,7 +38,7 @@
             <Button x:Name="button1" Content="ПРОПУСТИТЬ" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="118" Height="20" Background="#FFF9F9F9" BorderBrush="#FF9B9B9B" Click="button1_Click"/>
             <Button x:Name="button3" Content="Загрузить всё" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="118" Height="20" Click="button3_Click" Background="#FFF9F9F9"/>
             <Button x:Name="button4" Content="Остановить загрузку" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="5" VerticalAlignment="Top" Width="118" Click="button4_Click" Height="20" Background="#FFF9F9F9"/>
-            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Width="118" TextAlignment="Center" Height="64">
+            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,10" Grid.Row="2" TextWrapping="Wrap" Width="118" TextAlignment="Center">
                 <Run>Страна: </Run><LineBreak/>
                 <Run Text="{Binding Country, Mode=OneWay}"/><LineBreak/>
                 <Run>Загружено </Run><LineBreak/>

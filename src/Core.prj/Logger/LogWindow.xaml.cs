@@ -17,7 +17,7 @@ namespace PlateGetter.Core.Logger
 
 		public LogWindow()
 		{
-			Log.OnLogged += OnLogged;
+			//Log.OnLogged += OnLogged;
 
 			InitializeComponent(); 
 		}

@@ -127,9 +127,9 @@ namespace PlateGetter
 		}
 
 		/// <summary>Загружает все изображения.</summary>
-		public async void DownloadAll()
+		public void DownloadAll()
 		{
-			await _imageLoader.DownloadAll(_currentPage - _settings.DownloadPages, _settings.DownloadPages).ConfigureAwait(false);
+			Task.Factory.StartNew(() => _imageLoader.DownloadAll(_currentPage - _settings.DownloadPages, _settings.DownloadPages));
 		}
 
 		/// <summary>Останавливает загрузку изображения.</summary>

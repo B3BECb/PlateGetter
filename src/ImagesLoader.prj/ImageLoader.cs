@@ -89,7 +89,7 @@ namespace PlateGetter.ImagesLoader
 						
 			while(regexImage == "" && page > endPage && !_cancelationTokenSource.IsCancellationRequested)
 			{
-				regexImage = await GetImageLink(page--);
+				regexImage = await GetImageLinkAsync(page--);
 				OnPageSkiped.BeginInvoke(this, page, null, null);
 			}
 
@@ -115,18 +115,16 @@ namespace PlateGetter.ImagesLoader
 
 		public async void LoadOneAsync(int page)
 		{
-			string regexImage = await GetImageLink(page).ConfigureAwait(false);
+			string regexImage = await GetImageLinkAsync(page).ConfigureAwait(false);
 
 			if(regexImage == "")
 			{
 				OnPageSkiped.BeginInvoke(this, page, null, null);
 				return;
 			}
-
+			
 			// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
 			regexImage = regexImage.Replace("/m/", "/o/");
-
-			if(_cancelationTokenSource.IsCancellationRequested) return;
 
 			using(var client = new WebClient())
 			{
@@ -137,7 +135,7 @@ namespace PlateGetter.ImagesLoader
 			}				
 		}		
 
-		public async Task DownloadAll(int startPage, int stopPage)
+		public void DownloadAll(int startPage, int stopPage)
 		{
 			if(_cancelationTokenSource.IsCancellationRequested) _cancelationTokenSource = new CancellationTokenSource();
 
@@ -193,8 +191,10 @@ namespace PlateGetter.ImagesLoader
 			Log.LogDebug("Image loaded");
 		}
 
-		private async Task<string> GetImageLink(int currentPage)
+		private string GetImageLink(int currentPage)
 		{
+			if(_cancelationTokenSource.IsCancellationRequested) return "";
+
 			string pageTitle = CurrentCountry.FullName;
 			string regexImage = "";
 			string page = "";
@@ -203,10 +203,8 @@ namespace PlateGetter.ImagesLoader
 			{
 				using(var webClient = new WebClient())
 				{
-					page = await webClient.DownloadStringTaskAsync(new Uri("http://platesmania.com/" + CurrentCountry.PlateName + "/foto" + currentPage)).ConfigureAwait(false);
+					page = webClient.DownloadString(new Uri("http://platesmania.com/" + CurrentCountry.PlateName + "/foto" + currentPage));
 				}
-
-				if(_cancelationTokenSource.IsCancellationRequested) return "";
 
 				pageTitle = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;
 
@@ -224,13 +222,13 @@ namespace PlateGetter.ImagesLoader
 					return "";
 				}
 
-				await Task.Factory.StartNew(() =>
+				Task.Factory.StartNew(() =>
 				{
 					Utilities.ValidatePath("images\\" + CurrentCountry.PlateName + "\\Analytics");
 					var regexDiscription = new Regex("<img .*alt=\"(.*)\" .*>").Matches(page)[0].Groups[1].Value;
 
 					Analytics.WriteAnalyticsData(regexDiscription, regexImage, CurrentCountry.PlateName);
-				}).ConfigureAwait(false);
+				});
 
 				Log.LogDebug("Founded image " + regexImage);
 
@@ -243,10 +241,10 @@ namespace PlateGetter.ImagesLoader
 			}
 		}
 
-		//private async Task<string> GetImageLinkAsync(int currentPage)
-		//{
-		//	return await GetImageLink(currentPage).ConfigureAwait(false);
-		//}
+		private async Task<string> GetImageLinkAsync(int currentPage)
+		{
+			return await Task.Factory.StartNew(() => GetImageLink(currentPage)).ConfigureAwait(false);
+		}
 
 		#endregion
 	}

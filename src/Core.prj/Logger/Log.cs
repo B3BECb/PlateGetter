@@ -17,31 +17,31 @@ namespace PlateGetter.Core.Logger
 		public static void LogError(string message, Exception exc)
 		{
 			var runElement = new LogMessage($"{message}. Exeption: {exc}", Colors.Red);
-			OnLogged.BeginInvoke(null, runElement, null, null);
+			OnLogged?.BeginInvoke(null, runElement, null, null);
 		}
 
 		public static void LogWarning(string message)
 		{			
 			var runElement = new LogMessage(message, Colors.DarkOrange);
-			OnLogged.BeginInvoke(null, runElement, null, null);
+			OnLogged?.BeginInvoke(null, runElement, null, null);
 		}
 
 		public static void LogDebug(string message)
 		{
 			var runElement = new LogMessage(message, Colors.DarkBlue);
-			OnLogged.BeginInvoke(null, runElement, null, null);
+			OnLogged?.BeginInvoke(null, runElement, null, null);
 		}
 
 		public static void LogInfo(string message)
 		{
 			var runElement = new LogMessage(message);
-			OnLogged.BeginInvoke(null, runElement, null, null);
+			OnLogged?.BeginInvoke(null, runElement, null, null);
 		}
 
 		public static void LogInfo(string message, Color color)
 		{
 			var runElement = new LogMessage(message, color);
-			OnLogged.BeginInvoke(null, runElement, null, null);
+			OnLogged?.BeginInvoke(null, runElement, null, null);
 		}
 	}
 }
