@@ -17,9 +17,11 @@ using PlateGetter.Core.Statistics;
 namespace PlateGetter
 {
 	internal sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
-	{				
+	{
 		#region Properties
-		
+
+		public string Country => _settings.SelectedCountry.FullName;
+
 		public ImageSource Image => _image;
 
 		public int DownlodedImages => _imageLoader.DownloadedImages;
@@ -125,9 +127,9 @@ namespace PlateGetter
 		}
 
 		/// <summary>Загружает все изображения.</summary>
-		public void DownloadAll()
+		public async void DownloadAll()
 		{
-			_imageLoader.DownloadAll(_currentPage - _settings.DownloadPages, _settings.DownloadPages).ConfigureAwait(false);
+			await _imageLoader.DownloadAll(_currentPage - _settings.DownloadPages, _settings.DownloadPages).ConfigureAwait(false);
 		}
 
 		/// <summary>Останавливает загрузку изображения.</summary>
@@ -151,7 +153,8 @@ namespace PlateGetter
 					_currentPage = _settings.StartPageNumber;
 					_imageLoader.CurrentCountry = _settings.SelectedCountry;
 					OnPropertyChanged("CurrentPage");
-				}
+					OnPropertyChanged("Country");
+				}				
 			}
 		}
 

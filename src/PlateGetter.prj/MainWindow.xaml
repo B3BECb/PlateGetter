@@ -39,10 +39,12 @@
             <Button x:Name="button3" Content="Загрузить всё" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="118" Height="20" Click="button3_Click" Background="#FFF9F9F9"/>
             <Button x:Name="button4" Content="Остановить загрузку" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="5" VerticalAlignment="Top" Width="118" Click="button4_Click" Height="20" Background="#FFF9F9F9"/>
             <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Width="118" TextAlignment="Center" Height="64">
-            <Run>Загружено </Run><LineBreak/>
-            <Run Text="{Binding DownlodedImages, Mode=OneWay}"/><LineBreak/>
-            <Run> из</Run><LineBreak/>
-            <Run Text="{Binding TotalPages, Mode=OneWay}"/>
+                <Run>Страна: </Run><LineBreak/>
+                <Run Text="{Binding Country, Mode=OneWay}"/><LineBreak/>
+                <Run>Загружено </Run><LineBreak/>
+                <Run Text="{Binding DownlodedImages, Mode=OneWay}"/><LineBreak/>
+                <Run> из</Run><LineBreak/>
+                <Run Text="{Binding TotalPages, Mode=OneWay}"/>
             </TextBlock>
             <Button x:Name="button2" Content="Открыть папку" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="3" VerticalAlignment="Top" Width="118" Click="button2_Click"/>
         </Grid>

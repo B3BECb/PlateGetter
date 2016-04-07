@@ -72,7 +72,7 @@ namespace PlateGetter.ImagesLoader
 
 			try
 			{
-				await LoadNext(startPage, endPage, _cancelationTokenSource.Token).ConfigureAwait(false);
+				await LoadNext(startPage, endPage).ConfigureAwait(false);
 			}
 			catch(Exception exc)
 			{
@@ -83,32 +83,39 @@ namespace PlateGetter.ImagesLoader
 			Log.LogDebug("Search finished");
 		}
 		
-		public async Task LoadNext(int page, int endPage, CancellationToken token)
+		public async Task LoadNext(int page, int endPage)
 		{
 			string regexImage = "";
 						
-			while(regexImage == "" && page > endPage && !token.IsCancellationRequested)
+			while(regexImage == "" && page > endPage && !_cancelationTokenSource.IsCancellationRequested)
 			{
-				regexImage = await GetImageLinkAsync(page--);
+				regexImage = await GetImageLink(page--);
 				OnPageSkiped.BeginInvoke(this, page, null, null);
 			}
 
 			// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
 			regexImage = regexImage.Replace("/m/", "/o/");
-			//regexImage = new Regex("/./").Replace(regexImage, "/o/");
 
-			BitmapImage bitmapImage = new BitmapImage();
-			bitmapImage.DownloadCompleted += ImageDownloadCompleted;
-			bitmapImage.DownloadProgress += DownloadProgress;
-			bitmapImage.BeginInit();
-			bitmapImage.CacheOption = BitmapCacheOption.None;
-			bitmapImage.UriSource = new Uri(regexImage, UriKind.Absolute);
-			bitmapImage.EndInit();
+			using(var client = new WebClient())
+			{
+				client.DownloadFileCompleted += ImageDownloadCompleted;
+				client.DownloadProgressChanged += LoadProgressChanged;
+				await client.DownloadFileTaskAsync(regexImage, "images\\" + CurrentCountry.PlateName + "\\foto" + page + ".jpeg").ConfigureAwait(false);
+				_downlodedImages++;
+			}
+
+			//BitmapImage bitmapImage = new BitmapImage();
+			//bitmapImage.DownloadCompleted += ImageDownloadCompleted;
+			//bitmapImage.DownloadProgress += DownloadProgress;
+			//bitmapImage.BeginInit();
+			//bitmapImage.CacheOption = BitmapCacheOption.None;
+			//bitmapImage.UriSource = new Uri(regexImage, UriKind.Absolute);
+			//bitmapImage.EndInit();
 		}
 
-		public async void LoadOneAsync(int page, CancellationToken token)
+		public async void LoadOneAsync(int page)
 		{
-			string regexImage = await GetImageLinkAsync(page).ConfigureAwait(false);
+			string regexImage = await GetImageLink(page).ConfigureAwait(false);
 
 			if(regexImage == "")
 			{
@@ -118,9 +125,8 @@ namespace PlateGetter.ImagesLoader
 
 			// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
 			regexImage = regexImage.Replace("/m/", "/o/");
-			//regexImage = new Regex("/./").Replace(regexImage, "/o/");
 
-			if(token.IsCancellationRequested) return;
+			if(_cancelationTokenSource.IsCancellationRequested) return;
 
 			using(var client = new WebClient())
 			{
@@ -140,7 +146,7 @@ namespace PlateGetter.ImagesLoader
 			_downlodedImages = 0;
 			while(_downlodedImages < stopPage && !_cancelationTokenSource.IsCancellationRequested)
 			{
-				await Task.Factory.StartNew(() => LoadOneAsync(startPage--, _cancelationTokenSource.Token)).ConfigureAwait(false);
+				LoadOneAsync(startPage--);
 				Thread.Sleep(10);
 			}
 			Log.LogDebug("Download all finished");
@@ -200,6 +206,8 @@ namespace PlateGetter.ImagesLoader
 					page = await webClient.DownloadStringTaskAsync(new Uri("http://platesmania.com/" + CurrentCountry.PlateName + "/foto" + currentPage)).ConfigureAwait(false);
 				}
 
+				if(_cancelationTokenSource.IsCancellationRequested) return "";
+
 				pageTitle = new Regex("<title>(.*)</title>").Matches(page)[0].Groups[1].Value;
 
 				if(pageTitle.ToLower() == CurrentCountry.FullName.ToLower())
@@ -235,10 +243,10 @@ namespace PlateGetter.ImagesLoader
 			}
 		}
 
-		private async Task<string> GetImageLinkAsync(int currentPage)
-		{
-			return await GetImageLink(currentPage).ConfigureAwait(false);
-		}
+		//private async Task<string> GetImageLinkAsync(int currentPage)
+		//{
+		//	return await GetImageLink(currentPage).ConfigureAwait(false);
+		//}
 
 		#endregion
 	}
