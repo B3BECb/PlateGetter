@@ -48,6 +48,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logger\LogService.cs" />
     <Compile Include="Statistics\Analytics.cs" />
     <Compile Include="Helpers\CountriesRegistrator.cs" />
     <Compile Include="Helpers\Country.cs" />
