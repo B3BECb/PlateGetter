@@ -108,12 +108,12 @@ namespace PlateGetter
 		{
 			_progress = 0;
 			OnPropertyChanged("DownloadProgress");
-			OnPropertyChanged("DownlodedImages");
 			
-			_imageLoader.LoadNextAsync(_currentPage, _settings.StartPageNumber - _settings.DownloadPages);
+			_imageLoader.LoadNextAsync(_currentPage);
 
 			_imageLoader.SaveImage(_image as BitmapImage, _currentPage);
 
+			OnPropertyChanged("DownlodedImages");
 		}
 
 		/// <summary>Переходит к следующему изображению.</summary>
@@ -123,7 +123,7 @@ namespace PlateGetter
 			OnPropertyChanged("DownloadProgress");
 			OnPropertyChanged("DownlodedImages");
 
-			_imageLoader.LoadNextAsync(_currentPage, _settings.StartPageNumber - _settings.DownloadPages);
+			_imageLoader.LoadNextAsync(_currentPage);
 		}
 
 		/// <summary>Загружает все изображения.</summary>

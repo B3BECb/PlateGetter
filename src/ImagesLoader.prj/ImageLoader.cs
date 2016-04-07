@@ -63,7 +63,7 @@ namespace PlateGetter.ImagesLoader
 			Log.LogDebug("Download canceled");
 		}
 
-		public async void LoadNextAsync(int startPage, int endPage)
+		public async void LoadNextAsync(int startPage)
 		{
 			Log.LogDebug("Search started");
 			_downlodedImages = 0;
@@ -72,7 +72,7 @@ namespace PlateGetter.ImagesLoader
 
 			try
 			{
-				await LoadNext(startPage, endPage).ConfigureAwait(false);
+				await LoadNext(startPage).ConfigureAwait(false);
 			}
 			catch(Exception exc)
 			{
@@ -83,34 +83,28 @@ namespace PlateGetter.ImagesLoader
 			Log.LogDebug("Search finished");
 		}
 		
-		public async Task LoadNext(int page, int endPage)
+		public async Task LoadNext(int page)
 		{
 			string regexImage = "";
 						
-			while(regexImage == "" && page > endPage && !_cancelationTokenSource.IsCancellationRequested)
+			while(regexImage == "" && !_cancelationTokenSource.IsCancellationRequested)
 			{
 				regexImage = await GetImageLinkAsync(page--);
 				OnPageSkiped.BeginInvoke(this, page, null, null);
 			}
 
+			if(string.IsNullOrEmpty(regexImage)) return;
+
 			// Попытка улучшения качества фото. работает только с platesmania. s - низкое разрешение изображения, o - большое.
 			regexImage = regexImage.Replace("/m/", "/o/");
-
-			using(var client = new WebClient())
-			{
-				client.DownloadFileCompleted += ImageDownloadCompleted;
-				client.DownloadProgressChanged += LoadProgressChanged;
-				await client.DownloadFileTaskAsync(regexImage, "images\\" + CurrentCountry.PlateName + "\\foto" + page + ".jpeg").ConfigureAwait(false);
-				_downlodedImages++;
-			}
-
-			//BitmapImage bitmapImage = new BitmapImage();
-			//bitmapImage.DownloadCompleted += ImageDownloadCompleted;
-			//bitmapImage.DownloadProgress += DownloadProgress;
-			//bitmapImage.BeginInit();
-			//bitmapImage.CacheOption = BitmapCacheOption.None;
-			//bitmapImage.UriSource = new Uri(regexImage, UriKind.Absolute);
-			//bitmapImage.EndInit();
+			
+			BitmapImage bitmapImage = new BitmapImage();
+			bitmapImage.DownloadCompleted += ImageDownloadCompleted;
+			bitmapImage.DownloadProgress += DownloadProgress;
+			bitmapImage.BeginInit();
+			bitmapImage.CacheOption = BitmapCacheOption.None;
+			bitmapImage.UriSource = new Uri(regexImage, UriKind.Absolute);
+			bitmapImage.EndInit();
 		}
 
 		public async void LoadOneAsync(int page)
