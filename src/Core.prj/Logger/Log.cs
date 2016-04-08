@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Documents;
 using System.Windows.Media;
 
@@ -12,6 +13,8 @@ namespace PlateGetter.Core.Logger
 {
 	public static class Log
 	{
+		public static Dictionary<int, LogMessage> Messages = new Dictionary<int, LogMessage>();
+
 		public static event EventHandler<LogMessage> OnLogged;
 		
 		public static void LogError(string message, Exception exc)

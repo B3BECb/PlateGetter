@@ -13,13 +13,11 @@ namespace PlateGetter.Core.Logger
 	{
 		private Timer _logUpdaer = new Timer(500);
 
-		private int _fileHash;
+		private int _logHash;
+
+		private int _lastMessage;
 
 		private string _logPath = "Images/Log.log";
-
-		private Dictionary<string, LogMessage> _messages = new Dictionary<string, LogMessage>();
-
-		public event EventHandler LogUpdated;
 
 		public LogService()
 		{
@@ -29,15 +27,21 @@ namespace PlateGetter.Core.Logger
 
 		private void _logUpdaer_Elapsed(object sender, ElapsedEventArgs e)
 		{
-			var currentHash = new FileInfo(_logPath).GetHashCode();
+			var currentHash = Log.Messages.GetHashCode();
 
-			if(_fileHash != currentHash)
+			if(_logHash != currentHash)
 			{
-				_fileHash = currentHash;
+				_logHash = currentHash;
 
-				var newMessages = GetNewMessages();
+				for (int i = _lastMessage; i < Log.Messages.Count; i++)
+				{
+					using (var writer = new StreamWriter(_logPath))
+					{
+						writer.WriteLine(Log.Messages.Where(elem => elem.Key == i));
+					}
+				}        
 
-				LogUpdated?.Invoke(this, newMessages);
+				_lastMessage = Log.Messages.Keys.Last();
 			}
 		}
 
