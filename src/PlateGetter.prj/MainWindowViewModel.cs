@@ -22,6 +22,8 @@ namespace PlateGetter
 
 		public string Country => _settings.SelectedCountry.FullName;
 
+		private static NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+
 		public ImageSource Image => _image;
 
 		public int DownlodedImages => _imageLoader.DownloadedImages;
@@ -137,7 +139,7 @@ namespace PlateGetter
 		{
 			_imageLoader.CancelDownload();
 			_progress = 0;
-			Log.LogInfo("Load cancalled");
+			Log.Info("Load cancalled");
 		}
 
 		public void Settings()
@@ -163,12 +165,12 @@ namespace PlateGetter
 			if(_logWindow.ShowActivated)
 			{
 				_logWindow.Show();
-				Log.LogInfo("Лог открыт");
+				Log.Info("Лог открыт");
 			}		
 			else
 			{
 				_logWindow.Hide();
-				Log.LogInfo("Лог закрыт");
+				Log.Info("Лог закрыт");
 			}
 		}
 

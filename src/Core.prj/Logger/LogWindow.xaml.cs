@@ -15,21 +15,11 @@ namespace PlateGetter.Core.Logger
 	{
 		private bool _isDisposing;
 
+		private static NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+		
 		public LogWindow()
 		{
-			//Log.OnLogged += OnLogged;
-
 			InitializeComponent(); 
-		}
-
-		private void OnLogged(object sender, LogMessage e)
-		{
-			Dispatcher.Invoke(() =>
-			{
-				_txtLog.Inlines.Add(new Run(e.Message) { Foreground = e.TextBrush});
-				_txtLog.Inlines.Add(new LineBreak());
-
-			});
 		}
 
 		private void Window_Closing(object sender, CancelEventArgs e)

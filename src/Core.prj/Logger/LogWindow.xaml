@@ -7,10 +7,5 @@
         mc:Ignorable="d"
         Title="Log" Height="350" Width="525" WindowStyle="ToolWindow" Closing="Window_Closing">
     <Grid>
-        <ScrollViewer Margin="10,0,0,0">
-            <TextBlock Name="_txtLog"/>
-        </ScrollViewer>
-
-
     </Grid>
 </Window>

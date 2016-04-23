@@ -16,6 +16,8 @@ namespace PlateGetter.Settings
 
 		public int DownloadPages { get; set; }
 
+		private static NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+
 		#endregion
 
 
@@ -56,13 +58,13 @@ namespace PlateGetter.Settings
 		internal void Apply()
 		{
 			_settings.DownloadPages = DownloadPages;
-			Log.LogInfo("Pages to download: " + DownloadPages);
+			Log.Info("Pages to download: " + DownloadPages);
 
 			_settings.StartPageNumber = StartPageNumber;
-			Log.LogInfo("Start page number: " + StartPageNumber);
+			Log.Info("Start page number: " + StartPageNumber);
 
 			_settings.SelectedCountry = _selectedCountry;
-			Log.LogInfo("Selected country " + _selectedCountry);
+			Log.Info("Selected country " + _selectedCountry);
 		}
 
 		#endregion

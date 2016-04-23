@@ -1,6 +1,5 @@
 ﻿using PlateGetter.Core;
 using PlateGetter.Core.Helpers;
-using PlateGetter.Core.Logger;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,9 +13,12 @@ namespace PlateGetter.Core.Statistics
 {
 	public class Analytics
 	{
+		private static NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+
 		[Serializable]
 		public sealed class CarInfo
 		{
+
 			public string PlateNumber { get; set; }
 
 			public string PlateMask { get; set; }
@@ -58,12 +60,12 @@ namespace PlateGetter.Core.Statistics
 
 			SaveInXmlFormat(car, $"images\\{plateName}\\Analytics\\Statistics.xml");
 
-			Log.LogDebug($"Serialized plate: {plateNumberOriginal}. Plate template: {plateNumberMask}");
+			log.Debug($"Serialized plate: {plateNumberOriginal}. Plate template: {plateNumberMask}");
 		}
 
 		public static void Analize(List<Country> countries)
 		{
-			Log.LogInfo("Analize started");
+			log.Info("Analize started");
 			List<CarInfo> plates;
 			Dictionary<string, List<Plate>> countriesTemplates = new Dictionary<string, List<Plate>>();
 			foreach(var country in countries)
@@ -71,12 +73,12 @@ namespace PlateGetter.Core.Statistics
 				if(File.Exists($"images\\{country.PlateName}\\Analytics\\Statistics.xml"))
 				{
 					plates = LoadFromXmlFormat($"images\\{country.PlateName}\\Analytics\\Statistics.xml");
-					Log.LogDebug($"Founded statistic for {country}. Total plates:{plates.Count}.");
+					log.Debug($"Founded statistic for {country}. Total plates:{plates.Count}.");
 					
 					countriesTemplates.Add(country.FullName, CountTemplates(plates));					
 				}
 			}
-			Log.LogInfo("Analize finished");
+			log.Info("Analize finished");
 			using(var form = new AnalyticWindow(countriesTemplates))
 			{
 				if(form.ShowDialog() == true) { }

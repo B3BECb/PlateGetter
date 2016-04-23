@@ -33,6 +33,8 @@ namespace PlateGetter.ImagesLoader
 
 		public int DownloadedImages => _downlodedImages;
 
+		private static NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
+
 		#endregion
 
 		#region Events
@@ -60,12 +62,12 @@ namespace PlateGetter.ImagesLoader
 		public void CancelDownload()
 		{
 			_cancelationTokenSource?.Cancel();
-			Log.LogDebug("Download canceled");
+			Log.Debug("Download canceled");
 		}
 
 		public async void LoadNextAsync(int startPage)
 		{
-			Log.LogDebug("Search started");
+			Log.Debug("Search started");
 			_downlodedImages = 0;
 
 			if(_cancelationTokenSource.IsCancellationRequested) _cancelationTokenSource = new CancellationTokenSource();
@@ -76,11 +78,11 @@ namespace PlateGetter.ImagesLoader
 			}
 			catch(Exception exc)
 			{
-				Log.LogError(nameof(LoadNextAsync), exc);
-				Log.LogDebug("Search terminated");
+				Log.Error(nameof(LoadNextAsync), exc);
+				Log.Debug("Search terminated");
 			}
 
-			Log.LogDebug("Search finished");
+			Log.Debug("Search finished");
 		}
 		
 		public async Task LoadNext(int page)
@@ -133,7 +135,7 @@ namespace PlateGetter.ImagesLoader
 		{
 			if(_cancelationTokenSource.IsCancellationRequested) _cancelationTokenSource = new CancellationTokenSource();
 
-			Log.LogDebug("Download all started");
+			Log.Debug("Download all started");
 
 			_downlodedImages = 0;
 			while(_downlodedImages < stopPage && !_cancelationTokenSource.IsCancellationRequested)
@@ -141,7 +143,7 @@ namespace PlateGetter.ImagesLoader
 				LoadOneAsync(startPage--);
 				Thread.Sleep(10);
 			}
-			Log.LogDebug("Download all finished");
+			Log.Debug("Download all finished");
 		}
 		
 		public bool SaveImage(BitmapImage image, int page)
@@ -182,7 +184,7 @@ namespace PlateGetter.ImagesLoader
 		{
 			(sender as BitmapImage)?.Freeze();
 			OnImageLoaded.BeginInvoke(sender, e, null, null);
-			Log.LogDebug("Image loaded");
+			Log.Debug("Image loaded");
 		}
 
 		private string GetImageLink(int currentPage)
@@ -204,7 +206,7 @@ namespace PlateGetter.ImagesLoader
 
 				if(pageTitle.ToLower() == CurrentCountry.FullName.ToLower())
 				{
-					Log.LogWarning($"Page {currentPage} not found");
+					Log.Warn($"Page {currentPage} not found");
 					return "";
 				}
 
@@ -212,7 +214,7 @@ namespace PlateGetter.ImagesLoader
 
 				if(regexImage.Length < 3)
 				{
-					Log.LogWarning($"Page {currentPage} has incorect format");
+					Log.Warn($"Page {currentPage} has incorect format");
 					return "";
 				}
 
@@ -224,13 +226,13 @@ namespace PlateGetter.ImagesLoader
 					Analytics.WriteAnalyticsData(regexDiscription, regexImage, CurrentCountry.PlateName);
 				});
 
-				Log.LogDebug("Founded image " + regexImage);
+				Log.Debug("Founded image " + regexImage);
 
 				return regexImage;
 			}
 			catch(Exception exc)
 			{
-				Log.LogError(nameof(GetImageLink), exc);
+				Log.Error(nameof(GetImageLink), exc);
 				return "";
 			}
 		}

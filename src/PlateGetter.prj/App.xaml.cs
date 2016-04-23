@@ -1,4 +1,5 @@
 ﻿using PlateGetter.Core;
+using PlateGetter.Core.Logger;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -18,11 +19,14 @@ namespace PlateGetter
 
 		App()
 		{
-			_settings = new ProgrammSettings();
-			
-			using(var mainForm = new MainWindow(_settings))
+			using(var logger = new LoggerService())
 			{
-				mainForm.ShowDialog();
+				_settings = new ProgrammSettings();
+
+				using(var mainForm = new MainWindow(_settings))
+				{
+					mainForm.ShowDialog();
+				}
 			}
 		}
 	}
