@@ -1,4 +1,5 @@
 ﻿using PlateGetter.Core.Logger;
+using System;
 using System.IO;
 
 namespace PlateGetter.Core
@@ -11,8 +12,15 @@ namespace PlateGetter.Core
 		{
 			if(!Directory.Exists(path))
 			{
-				Directory.CreateDirectory(path);
-				log.Debug("Created directory " + path);
+				try
+				{
+					Directory.CreateDirectory(path);
+					log.Debug("Created directory " + path);
+				}
+				catch(Exception ex)
+				{
+					log.Warn(ex, "Could not create directory " + path);
+				}
 			}
 		}
 	}
