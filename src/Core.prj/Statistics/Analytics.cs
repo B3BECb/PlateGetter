@@ -190,7 +190,7 @@ namespace PlateGetter.Core.Statistics
 				}
 			}
 
-			return lettersDict;
+			return lettersDict.OrderBy(key => key.Key).ToDictionary((keyItem) => keyItem.Key, (valueItem) => valueItem.Value);
 		}
 	}
 }

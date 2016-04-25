@@ -26,7 +26,7 @@ namespace PlateGetter.Core.Statistics
 			InitializeComponent();
 			
 			int col = 0;
-
+			
 			foreach(var country in countriesTemplates)
 			{
 				grid.Children.Add(new DoughnutChart()
@@ -40,6 +40,7 @@ namespace PlateGetter.Core.Statistics
 				var insertedChild = grid.Children[grid.Children.Count - 1] as DoughnutChart;
 				
 				Grid.SetColumn(insertedChild, col);
+				Grid.SetRow(insertedChild, 0);
 				grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
 
 				insertedChild.Series.Add(new ChartSeries() { SeriesTitle = country.Key, DisplayMember = "Category", ValueMember = "Number" });
@@ -51,7 +52,7 @@ namespace PlateGetter.Core.Statistics
 
 				//-----
 
-				grid.Children.Add(new StackedBarChart()
+				grid.Children.Add(new ClusteredColumnChart()
 				{
 					ChartTitle = country.Key,
 					ChartSubTitle = "Распределение символов для " + country.Key,
@@ -60,19 +61,18 @@ namespace PlateGetter.Core.Statistics
 					BorderBrush = new SolidColorBrush(Colors.LightGray)
 				});
 
-				var insertedChild2 = grid.Children[grid.Children.Count - 1] as StackedBarChart;
+				var insertedChild2 = grid.Children[grid.Children.Count - 1] as ClusteredColumnChart;
 
 				Grid.SetColumn(insertedChild2, col++);
 				grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
 
 				Grid.SetRow(insertedChild2, 1);
-				grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
 
 				insertedChild2.Series.Add(new ChartSeries() { SeriesTitle = country.Key, DisplayMember = "Category", ValueMember = "Number" });
 
 				foreach(var plate in country.Value.Letters)
 				{
-					insertedChild2.Series.Last().Items.Add(plate);
+					insertedChild2.Series.Last().Items.Add(new Plate(plate.Key.ToString(), plate.Value));
 				}
 			}
 		}

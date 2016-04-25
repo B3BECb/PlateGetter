@@ -7,7 +7,12 @@
 		Title="AnalyticWindow" Height="300" Width="300">
 	<Grid>
 		<ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto" BorderThickness="0" >
-			<Grid Name="grid"/>
+			<Grid Name="grid">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="1*"/>
+					<RowDefinition Height="1*"/>
+				</Grid.RowDefinitions>
+			</Grid>
 		</ScrollViewer>
 	</Grid>
 		
