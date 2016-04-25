@@ -21,7 +21,7 @@ namespace PlateGetter.Core.Statistics
 	/// </summary>
 	public partial class AnalyticWindow : Window, IDisposable
 	{
-		public AnalyticWindow(Dictionary<string, List<Plate>> countriesTemplates)
+		public AnalyticWindow(Dictionary<string, CountryStatistic> countriesTemplates)
 		{
 			InitializeComponent();
 			
@@ -39,14 +39,40 @@ namespace PlateGetter.Core.Statistics
 
 				var insertedChild = grid.Children[grid.Children.Count - 1] as DoughnutChart;
 				
-				Grid.SetColumn(insertedChild, col++);
+				Grid.SetColumn(insertedChild, col);
 				grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
 
 				insertedChild.Series.Add(new ChartSeries() { SeriesTitle = country.Key, DisplayMember = "Category", ValueMember = "Number" });
 
-				foreach(var plate in country.Value)
+				foreach(var plate in country.Value.Templates)
 				{
 					insertedChild.Series.Last().Items.Add(plate);
+				}
+
+				//-----
+
+				grid.Children.Add(new StackedBarChart()
+				{
+					ChartTitle = country.Key,
+					ChartSubTitle = "Распределение символов для " + country.Key,
+					Name = country.Key.Replace(' ', '_'),
+					BorderThickness = new Thickness(1, 0, 1, 0),
+					BorderBrush = new SolidColorBrush(Colors.LightGray)
+				});
+
+				var insertedChild2 = grid.Children[grid.Children.Count - 1] as StackedBarChart;
+
+				Grid.SetColumn(insertedChild2, col++);
+				grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+
+				Grid.SetRow(insertedChild2, 1);
+				grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+
+				insertedChild2.Series.Add(new ChartSeries() { SeriesTitle = country.Key, DisplayMember = "Category", ValueMember = "Number" });
+
+				foreach(var plate in country.Value.Letters)
+				{
+					insertedChild2.Series.Last().Items.Add(plate);
 				}
 			}
 		}

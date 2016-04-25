@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProgrammSettings.cs" />
+    <Compile Include="Statistics\CountryStatistic.cs" />
     <Compile Include="Statistics\Plate.cs" />
     <Compile Include="Statistics\AnalyticWindow.xaml.cs">
       <DependentUpon>AnalyticWindow.xaml</DependentUpon>

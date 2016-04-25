@@ -65,15 +65,19 @@ namespace PlateGetter.Core.Statistics
 		{
 			Log.LogInfo("Analize started");
 			List<CarInfo> plates;
-			Dictionary<string, List<Plate>> countriesTemplates = new Dictionary<string, List<Plate>>();
+			Dictionary<string, CountryStatistic> countriesTemplates = new Dictionary<string, CountryStatistic>();
 			foreach(var country in countries)
 			{
 				if(File.Exists($"images\\{country.PlateName}\\Analytics\\Statistics.xml"))
 				{
 					plates = LoadFromXmlFormat($"images\\{country.PlateName}\\Analytics\\Statistics.xml");
 					Log.LogDebug($"Founded statistic for {country}. Total plates:{plates.Count}.");
-					
-					countriesTemplates.Add(country.FullName, CountTemplates(plates));					
+
+					var countedTemplates = CountTemplates(new List<CarInfo>(plates));
+								
+					var countedLetters = CountLetters(plates, countedTemplates);
+
+					countriesTemplates.Add(country.FullName, new CountryStatistic(countedTemplates, countedLetters));		
 				}
 			}
 			Log.LogInfo("Analize finished");
@@ -155,6 +159,38 @@ namespace PlateGetter.Core.Statistics
 			}
 
 			return countedTemplates;
+		}
+
+		static private Dictionary<char, int> CountLetters(List<CarInfo> platesList, List<Plate> templates)
+		{
+			var lettersDict = new Dictionary<char, int>();
+
+			foreach(var template in templates)
+			{
+				var plates = platesList.Where(v => v.PlateMask == template.Category);
+
+				foreach(var plate in plates)
+				{
+					foreach(var letter in plate.PlateNumber.ToLower())
+					{
+						if(char.IsLetterOrDigit(letter))
+						{
+							if(lettersDict.ContainsKey(letter))
+							{
+								var value = lettersDict.Where(x => x.Key == letter).FirstOrDefault().Value;
+								lettersDict.Remove(letter);
+								lettersDict.Add(letter, ++value);
+							}
+							else
+							{
+								lettersDict.Add(letter, 1);
+							}
+						}
+					}
+				}
+			}
+
+			return lettersDict;
 		}
 	}
 }
