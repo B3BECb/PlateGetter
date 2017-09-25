@@ -51,8 +51,8 @@ namespace PlateGetter.Core.Statistics
 		public static void WriteAnalyticsData(string plateInfo, string fotoUrl, string plateName)
 		{
 			var plateNumberOriginal = plateInfo.Split(',').FirstOrDefault().ToLower();
-			var plateNumberMask = new Regex("[a-z]").Replace(plateNumberOriginal, "X");
-			plateNumberMask = new Regex("[0-9]").Replace(plateNumberMask, "9");
+			var plateNumberMask = new Regex(@"[^\d^\s]").Replace(plateNumberOriginal, "X");
+			plateNumberMask = new Regex(@"[\d]").Replace(plateNumberMask, "9");
 
 			var car = new CarInfo(plateNumberOriginal, plateNumberMask, fotoUrl, plateInfo);
 

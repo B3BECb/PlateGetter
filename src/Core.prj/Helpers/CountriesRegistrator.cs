@@ -32,6 +32,8 @@ namespace PlateGetter.Core.Helpers
 
 			RegistredCountries.Add(new Country("moldova", "md"));
 
+			RegistredCountries.Add(new Country("Разное", "xx"));
+
 			RegistredCountries.Add(new Country("czech republic", "cz"));
 		}
 	}
