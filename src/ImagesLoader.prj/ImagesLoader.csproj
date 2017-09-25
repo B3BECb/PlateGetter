@@ -45,6 +45,9 @@
     <Compile Include="ImageLoader.cs" />
     <Compile Include="PageSearcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebClientExtension.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core.prj\Core.csproj">
