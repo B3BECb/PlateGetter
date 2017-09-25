@@ -199,6 +199,7 @@ namespace PlateGetter.ImagesLoader
 			{
 				using(var webClient = new WebClientResponseUriChecker())
 				{
+					webClient.Headers.Add("Content-Type", "text/html; charset=UTF-8");
 					page = webClient.DownloadString(new Uri("http://platesmania.com/" + CurrentCountry.PlateName + "/foto" + currentPage));
 					if(webClient.ResponseUri == new Uri("http://platesmania.com/" + CurrentCountry.PlateName + "/")) return "";
 				}
